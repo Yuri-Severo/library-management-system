@@ -32,7 +32,7 @@ export const userSchema = pgTable("User", {
     .notNull(),
 });
 
-export const userRelations = relations(userSchema, ({ one }) => ({
+export const userRelations = relations(userSchema, ({ one, many }) => ({
   role: one(roleSchema, {
     fields: [userSchema.role_id],
     references: [roleSchema.id],
