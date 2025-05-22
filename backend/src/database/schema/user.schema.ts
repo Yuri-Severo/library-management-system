@@ -3,6 +3,8 @@ import { pgTable, varchar, uuid, timestamp } from "drizzle-orm/pg-core";
 import { roleSchema } from "./role.schema";
 import { departmentSchema } from "./department.schema";
 import { courseSchema } from "./course.schema";
+import { loanSchema } from "./loan.schema";
+import { auditLogsSchema } from "./audit_logs.schema";
 
 export const userSchema = pgTable("User", {
   id: uuid("id")
@@ -32,7 +34,7 @@ export const userSchema = pgTable("User", {
     .notNull(),
 });
 
-export const userRelations = relations(userSchema, ({ one }) => ({
+export const userRelations = relations(userSchema, ({ one, many }) => ({
   role: one(roleSchema, {
     fields: [userSchema.role_id],
     references: [roleSchema.id],
@@ -45,4 +47,6 @@ export const userRelations = relations(userSchema, ({ one }) => ({
     fields: [userSchema.department_id],
     references: [departmentSchema.id],
   }),
+  loans: many(loanSchema),
+  audit_logs: many(auditLogsSchema)
 }));
