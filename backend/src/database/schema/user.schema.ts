@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, varchar, uuid, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, varchar, uuid, timestamp, boolean } from "drizzle-orm/pg-core";
 import { roleSchema } from "./role.schema";
 import { departmentSchema } from "./department.schema";
 import { courseSchema } from "./course.schema";
@@ -26,6 +26,7 @@ export const userSchema = pgTable("User", {
   registration: varchar("registration", { length: 255 }).notNull(),
   phone_number: varchar("phone_number", { length: 255 }).notNull(),
   address: varchar("address", { length: 255 }).notNull(),
+  isActive: boolean(),
   created_at: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
