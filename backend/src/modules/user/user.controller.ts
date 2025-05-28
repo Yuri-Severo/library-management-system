@@ -3,7 +3,14 @@ import { zUserSchema, zUserUpdateSchema } from "./user.dto";
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
-//TODO: CPF FORMAT VALIDATOR
+//TODO: LOGIN METHOD
+//TODO: VERIFY ROLE INSIDE METHODS
+//TODO: USER RETURNS INFO BASED ON THE ROLE
+//TODO: WHEN UPDATE, SEND IT TO AUDIT_LOGS (WHO,WHEN,WHAT)
+//TODO: PROTECTION AGAINST CONCURRENT EDITS
+//TODO: Maintaining referential integrity
+//TODO: VERIFY PENDING LOANS
+//TODO: REGISTER TIMESTAMPS AND REASON WHEN ENABLE/DISABLE USER
 export class UserController {
   static readonly userService = new UserService(db);
 
@@ -13,7 +20,7 @@ export class UserController {
       if (users.length === 0) {
         return res.status(404).json({
           error: "Not Found",
-          message: "There's no users in the database",
+          message: "There's no users",
         });
       }
       res.status(200).json(users);
@@ -35,7 +42,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       res.status(200).json(user);
@@ -58,7 +65,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       zUserSchema.parse({name})
@@ -83,7 +90,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       res.status(200).json(user);
@@ -106,7 +113,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       res.status(200).json(user);
@@ -192,7 +199,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       const updatedUser = await this.userService.update(userId, validatedData);
@@ -226,7 +233,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       const updatedUser = await this.userService.updateStatus(userId, status);
@@ -249,7 +256,7 @@ export class UserController {
       if (!user) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found in the database",
+          message: "User was not found",
         });
       }
       const deletedUser = await this.userService.delete(userId);
