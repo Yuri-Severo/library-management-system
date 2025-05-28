@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { zUserSchema } from "./user.dto";
+import { zUserSchema, zUserUpdateSchema } from "./user.dto";
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
@@ -47,6 +47,13 @@ export class UserController {
   static async getOneByName(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name;
+      const validatedData = zUserUpdateSchema.safeParse({name: name})
+      if(!validatedData.success){
+        return res.status(400).json({
+          error: "Invalid sintax",
+          message: "Invalid data format",
+        });
+      }
       const user = await this.userService.getOneByName(name);
       if (!user) {
         return res.status(404).json({
@@ -64,7 +71,15 @@ export class UserController {
   static async getOneByRegistration(req: Request, res: Response, next: NextFunction) {
     try {
       const registration = req.params.registration;
+      const validatedData = zUserUpdateSchema.safeParse({registration: registration})
+      if(!validatedData.success){
+        return res.status(400).json({
+          error: "Invalid sintax",
+          message: "Invalid data format",
+        });
+      }
       const user = await this.userService.getOneByRegistration(registration);
+      
       if (!user) {
         return res.status(404).json({
           error: "Not found",
@@ -80,6 +95,13 @@ export class UserController {
   static async getOneByCpf(req: Request, res: Response, next: NextFunction) {
     try {
       const cpf = req.params.cpf;
+      const validatedData = zUserUpdateSchema.safeParse({cpf: cpf})
+      if(!validatedData.success){
+        return res.status(400).json({
+          error: "Invalid sintax",
+          message: "Invalid data format",
+        });
+      }
       const user = await this.userService.getOneByCpf(cpf);
       if (!user) {
         return res.status(404).json({
@@ -184,6 +206,14 @@ export class UserController {
     try {
       const userId = req.params.id;
       const status = req.body.status
+      
+      const validatedData = zUserUpdateSchema.safeParse({status: status})
+      if(!validatedData.success){
+        return res.status(400).json({
+          error: "Invalid sintax",
+          message: "Invalid data format",
+        });
+      }
   
       if (!isUuid(userId)) {
         return res.status(400).json({
