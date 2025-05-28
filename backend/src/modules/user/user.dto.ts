@@ -15,3 +15,4 @@ export const zUserSchema = z.object({
 });
 
 export type zUserSchema = z.infer<typeof zUserSchema>;
+export const zUserUpdateSchema = zUserSchema.partial() 
