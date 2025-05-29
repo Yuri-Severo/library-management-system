@@ -1,4 +1,4 @@
-import * as jwt from "jsonwebtoken";
+
 import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
@@ -84,20 +84,6 @@ export class UserService {
       .returning();
 
     return newUser;
-  }
-
-  async login(receivedCpf: string, receivedPassword: string) {
-    const [user] = await this.db
-      .select()
-      .from(userSchema)
-      .where(eq(userSchema.cpf, receivedCpf));
-    console.log(user)
-    if (!user) throw new Error("Invalid cpf or password, user not found");
-
-    const isPasswordValid = await verify(user.password, receivedPassword);
-    if (!isPasswordValid) throw new Error("Invalid password");
-    const {name, cpf, password} = user;
-    return jwt.sign({name, cpf, password}, "SECRET_KEY", { expiresIn: "1h" });
   }
 
   async update(id: string, user: zUserSchemaType) {

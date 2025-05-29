@@ -10,7 +10,6 @@ userRouter.get("/user/name/:name", UserController.getOneByName.bind(UserControll
 userRouter.get("/user/registration/:registration", UserController.getOneByRegistration.bind(UserController));
 userRouter.put("/user/:id", UserController.update.bind(UserController));
 userRouter.post("/user/register", UserController.register.bind(UserController));
-userRouter.post("/user/login", UserController.login.bind(UserController));
 userRouter.delete("/user/:id", UserController.delete.bind(UserController));
 
 export { userRouter };

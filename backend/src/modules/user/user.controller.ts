@@ -188,20 +188,6 @@ export class UserController {
     }
   }
 
-  static async login(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { cpf, password } = req.body;
-
-      if (!cpf || !password) {
-        next("CPF or password missing");
-      }
-      const user = await this.userService.login(cpf, password);
-      res.status(200).json({ message: "Logged In", user });
-    } catch (error) {
-      next(error);
-    }
-  }
-
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = zUserUpdateSchema.parse(req.body);
