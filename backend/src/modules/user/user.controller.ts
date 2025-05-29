@@ -51,7 +51,7 @@ export class UserController {
     }
   }
 
-  static async getOneByName(req: Request, res: Response, next: NextFunction) {
+  static async getByName(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name;
       if(!name){
@@ -60,14 +60,14 @@ export class UserController {
           message: "Must have a name for this search",
         });
       }
-      const user = await this.userService.getOneByName(name);
-      if (!user) {
+      const users = await this.userService.getByName(name);
+      if (!users) {
         return res.status(404).json({
           error: "Not found",
-          message: "User was not found",
+          message: "None user was found",
         });
       }
-      res.status(200).json(user);
+      res.status(200).json(users);
     } catch (error) {
       return res.status(500).json(error);
     }

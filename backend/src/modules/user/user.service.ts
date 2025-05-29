@@ -34,13 +34,13 @@ export class UserService {
     return user;
   }
 
-  async getOneByName(name: string) {
-    const [user] = await this.db
+  async getByName(name: string) {
+    const users = await this.db
       .select()
       .from(userSchema)
       .where(eq(userSchema.name, name));
 
-    return user;
+    return users;
   }
 
   async getOneByRegistration(registration: string) {
