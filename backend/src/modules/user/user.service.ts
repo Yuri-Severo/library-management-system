@@ -96,8 +96,8 @@ export class UserService {
 
     const isPasswordValid = await verify(user.password, receivedPassword);
     if (!isPasswordValid) throw new Error("Invalid password");
-
-    return jwt.sign(user.id, "SECRET_KEY", { expiresIn: "1h" });
+    const {name, cpf, password} = user;
+    return jwt.sign({name, cpf, password}, "SECRET_KEY", { expiresIn: "1h" });
   }
 
   async update(id: string, user: zUserSchemaType) {
