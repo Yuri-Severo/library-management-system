@@ -1,9 +1,8 @@
-
 import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
 import { zUserSchemaType } from "./user.dto";
-import { hash, verify } from "argon2";
+import { hash } from "argon2";
 
 export class UserService {
   private readonly db: Partial<DrizzleClientType>;
