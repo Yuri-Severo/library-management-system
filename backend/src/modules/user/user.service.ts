@@ -86,15 +86,15 @@ export class UserService {
     return newUser;
   }
 
-  async login(cpf: string, password: string) {
+  async login(receivedCpf: string, receivedPassword: string) {
     const [user] = await this.db
       .select()
       .from(userSchema)
-      .where(eq(userSchema.cpf, cpf));
+      .where(eq(userSchema.cpf, receivedCpf));
     console.log(user)
     if (!user) throw new Error("Invalid cpf or password, user not found");
 
-    const isPasswordValid = await verify(user.password, password);
+    const isPasswordValid = await verify(user.password, receivedPassword);
     if (!isPasswordValid) throw new Error("Invalid password");
 
     return jwt.sign(user.id, "SECRET_KEY", { expiresIn: "1h" });
