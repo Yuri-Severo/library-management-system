@@ -2,8 +2,8 @@ import {z} from "zod"
 
 export const zUserSchema = z.object({
     role_id: z.string(),
-    department_id: z.string().nullable(),
-    course_id: z.string().nullable(),
+    department_id: z.string().nullable().default(null),
+    course_id: z.string().nullable().default(null),
     name: z.string(),
     password: z.string(),
     email: z.string().nullable(),
@@ -11,7 +11,6 @@ export const zUserSchema = z.object({
     registration: z.string().nullable(),
     phone_number: z.string(),
     address: z.string(),
-    isActive: z.boolean()
 });
 
 export const zUserUpdateSchema = z.object({
