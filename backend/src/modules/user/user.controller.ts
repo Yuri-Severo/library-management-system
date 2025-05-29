@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { zUserSchema, zUserUpdateSchema } from "./user.dto";
+import { zUserPartialUpdateSchema, zUserSchema, zUserSchemaType, zUserUpdateSchema } from "./user.dto";
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
@@ -54,7 +54,7 @@ export class UserController {
   static async getOneByName(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name;
-      const validatedData = zUserUpdateSchema.safeParse({name: name})
+      const validatedData = zUserPartialUpdateSchema.safeParse({name: name})
       if(!validatedData.success){
         return res.status(400).json({
           error: "Invalid sintax",
@@ -78,7 +78,7 @@ export class UserController {
   static async getOneByRegistration(req: Request, res: Response, next: NextFunction) {
     try {
       const registration = req.params.registration;
-      const validatedData = zUserUpdateSchema.safeParse({registration: registration})
+      const validatedData = zUserPartialUpdateSchema.safeParse({registration: registration})
       if(!validatedData.success){
         return res.status(400).json({
           error: "Invalid sintax",
@@ -102,7 +102,7 @@ export class UserController {
   static async getOneByCpf(req: Request, res: Response, next: NextFunction) {
     try {
       const cpf = req.params.cpf;
-      const validatedData = zUserUpdateSchema.safeParse({cpf: cpf})
+      const validatedData = zUserPartialUpdateSchema.safeParse({cpf: cpf})
       if(!validatedData.success){
         return res.status(400).json({
           error: "Invalid sintax",
@@ -123,7 +123,7 @@ export class UserController {
   }
 
   static async create(
-    req: Request<{}, {}, zUserSchema>,
+    req: Request<{}, {}, zUserSchemaType>,
     res: Response,
     next: NextFunction
   ) {
@@ -187,7 +187,7 @@ export class UserController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const validatedData = zUserSchema.parse(req.body);
+      const validatedData = zUserUpdateSchema.parse(req.body);
       const userId = req.params.id;
       if (!isUuid(userId)) {
         return res.status(400).json({
@@ -214,7 +214,7 @@ export class UserController {
       const userId = req.params.id;
       const status = req.body.status
       
-      const validatedData = zUserUpdateSchema.safeParse({status: status})
+      const validatedData = zUserPartialUpdateSchema.safeParse({status: status})
       if(!validatedData.success){
         return res.status(400).json({
           error: "Invalid sintax",
