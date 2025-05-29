@@ -54,11 +54,10 @@ export class UserController {
   static async getOneByName(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name;
-      const validatedData = zUserPartialUpdateSchema.safeParse({name: name})
-      if(!validatedData.success){
+      if(!name){
         return res.status(400).json({
-          error: "Invalid sintax",
-          message: "Invalid data format",
+          error: "Bad Request",
+          message: "Must have a name for this search",
         });
       }
       const user = await this.userService.getOneByName(name);
@@ -78,11 +77,10 @@ export class UserController {
   static async getOneByRegistration(req: Request, res: Response, next: NextFunction) {
     try {
       const registration = req.params.registration;
-      const validatedData = zUserPartialUpdateSchema.safeParse({registration: registration})
-      if(!validatedData.success){
+      if(!registration){
         return res.status(400).json({
-          error: "Invalid sintax",
-          message: "Invalid data format",
+          error: "Bad Request",
+          message: "Must have a registration for this search",
         });
       }
       const user = await this.userService.getOneByRegistration(registration);
@@ -102,11 +100,10 @@ export class UserController {
   static async getOneByCpf(req: Request, res: Response, next: NextFunction) {
     try {
       const cpf = req.params.cpf;
-      const validatedData = zUserPartialUpdateSchema.safeParse({cpf: cpf})
-      if(!validatedData.success){
+      if(!cpf){
         return res.status(400).json({
-          error: "Invalid sintax",
-          message: "Invalid data format",
+          error: "Bad Request",
+          message: "Must have a cpf for this search",
         });
       }
       const user = await this.userService.getOneByCpf(cpf);
