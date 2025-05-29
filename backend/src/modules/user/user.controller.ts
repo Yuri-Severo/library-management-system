@@ -122,7 +122,7 @@ export class UserController {
     }
   }
 
-  static async create(
+  static async register(
     req: Request<{}, {}, zUserSchemaType>,
     res: Response,
     next: NextFunction
@@ -178,7 +178,7 @@ export class UserController {
         });
       }
 
-      const newUser = await this.userService.create(validatedData);
+      const newUser = await this.userService.register(validatedData);
       return res.status(201).json(newUser);
     } catch (error) {
       return res.status(500).json(error);
