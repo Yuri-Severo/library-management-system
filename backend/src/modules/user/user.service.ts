@@ -17,7 +17,7 @@ export class UserService {
   }
 
   async getOneById(id: string) {
-    const user = await this.db
+    const [user] = await this.db
       .select()
       .from(userSchema)
       .where(eq(userSchema.id, id));
@@ -26,7 +26,7 @@ export class UserService {
   }
 
   async getOneByCpf(cpf: string) {
-    const user = await this.db
+    const [user] = await this.db
       .select()
       .from(userSchema)
       .where(eq(userSchema.cpf, cpf));
@@ -35,7 +35,7 @@ export class UserService {
   }
 
   async getOneByName(name: string) {
-    const user = await this.db
+    const [user] = await this.db
       .select()
       .from(userSchema)
       .where(eq(userSchema.name, name));
@@ -44,7 +44,7 @@ export class UserService {
   }
 
   async getOneByRegistration(registration: string) {
-    const user = await this.db
+    const [user] = await this.db
       .select()
       .from(userSchema)
       .where(eq(userSchema.registration, registration));
