@@ -9,7 +9,7 @@ userRouter.get("/user/cpf/:cpf", UserController.getOneByCpf.bind(UserController)
 userRouter.get("/user/name/:name", UserController.getOneByName.bind(UserController));
 userRouter.get("/user/registration/:registration", UserController.getOneByRegistration.bind(UserController));
 userRouter.put("/user/:id", UserController.update.bind(UserController));
-userRouter.post("/user", UserController.create.bind(UserController));
+userRouter.post("/user", UserController.register.bind(UserController));
 userRouter.delete("/user/:id", UserController.delete.bind(UserController));
 
 export { userRouter };
