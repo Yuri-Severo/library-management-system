@@ -67,7 +67,6 @@ export class UserController {
           message: "User was not found",
         });
       }
-      zUserSchema.parse({name})
       res.status(200).json(user);
     } catch (error) {
       return res.status(500).json(error);
