@@ -7,7 +7,7 @@ export const zUserSchema = z.object({
     name: z.string(),
     password: z.string(),
     email: z.string().nullable(),
-    cpf: z.string().refine(validateCPF,{message: "Invalid CPF format"}),
+    cpf: z.string(),
     registration: z.string().nullable(),
     phone_number: z.string(),
     address: z.string(),
