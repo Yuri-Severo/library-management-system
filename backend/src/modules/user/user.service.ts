@@ -51,7 +51,7 @@ export class UserService {
     return user;
   }
 
-  async create(user: zUserSchemaType) {
+  async register(user: zUserSchemaType) {
     const {
       role_id,
       department_id,
