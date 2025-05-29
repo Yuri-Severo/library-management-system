@@ -14,8 +14,22 @@ export const zUserSchema = z.object({
     isActive: z.boolean()
 });
 
-export type zUserSchema = z.infer<typeof zUserSchema>;
-export const zUserUpdateSchema = zUserSchema.partial() 
+export const zUserUpdateSchema = z.object({
+    role_id: z.string(),
+    department_id: z.string().nullable(),
+    course_id: z.string().nullable(),
+    name: z.string(),
+    password: z.string(),
+    email: z.string().nullable(),
+    registration: z.string().nullable(),
+    phone_number: z.string(),
+    address: z.string(),
+    isActive: z.boolean()
+});
+
+export type zUserSchemaType = z.infer<typeof zUserSchema>;
+export type zUserUpdateSchemaType = z.infer<typeof zUserUpdateSchema>;
+export const zUserPartialUpdateSchema = zUserUpdateSchema.partial()
 
 function validateCPF(cpf: string): boolean {
   const cleaned = cpf.replace(/\D/g, '');
