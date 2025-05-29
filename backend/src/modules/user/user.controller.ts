@@ -142,13 +142,11 @@ export class UserController {
       } = req.body;
       if (
         !role_id ||
-        !department_id ||
+        !department_id &&
         !course_id ||
         !name ||
         !password ||
-        !email ||
         !cpf ||
-        !registration ||
         !phone_number ||
         !address
       ) {
