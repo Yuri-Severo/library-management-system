@@ -31,7 +31,7 @@ export type zUserSchemaType = z.infer<typeof zUserSchema>;
 export type zUserUpdateSchemaType = z.infer<typeof zUserUpdateSchema>;
 export const zUserPartialUpdateSchema = zUserUpdateSchema.partial()
 
-function validateCPF(cpf: string): boolean {
+export function validateCPF(cpf: string): boolean {
   const cleaned = cpf.replace(/\D/g, '');
 
   if (cleaned.length !== 11) return false;

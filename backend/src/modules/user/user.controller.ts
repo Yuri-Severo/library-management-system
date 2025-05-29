@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { zUserPartialUpdateSchema, zUserSchema, zUserSchemaType, zUserUpdateSchema } from "./user.dto";
+import { validateCPF, zUserPartialUpdateSchema, zUserSchema, zUserSchemaType, zUserUpdateSchema } from "./user.dto";
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
@@ -167,7 +167,12 @@ export class UserController {
         phone_number,
         address,
       });
-
+      if(!validateCPF(cpf)){
+        return res.status(400).json({
+          error: "Invalid value",
+          message: "Invalid sintax for CPF",
+        });
+      }
       const existingUser = await this.userService.getOneByCpf(cpf)
       if(existingUser){
         return res.json({
