@@ -111,6 +111,7 @@ export class UserController {
           error: "Bad Request",
           message: "Invalid sintax for CPF",
         });
+      }
       const user = await this.userService.getOneByCpf(cpf);
       if (!user) {
         return res.status(404).json({
