@@ -1,7 +1,7 @@
 import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
-import { zUserSchema } from "./user.dto";
+import { zUserSchemaType } from "./user.dto";
 
 export class UserService {
   private readonly db: Partial<DrizzleClientType>;
@@ -51,7 +51,7 @@ export class UserService {
     return user;
   }
 
-  async create(user: zUserSchema) {
+  async create(user: zUserSchemaType) {
     const {
       role_id,
       department_id,
@@ -83,7 +83,7 @@ export class UserService {
     return newUser;
   }
 
-  async update(id: string, user: zUserSchema) {
+  async update(id: string, user: zUserSchemaType) {
     const [updatedUser] = await this.db
       .update(userSchema)
       .set({ ...user })
