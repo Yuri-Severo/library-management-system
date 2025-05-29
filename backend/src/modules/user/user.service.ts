@@ -1,3 +1,4 @@
+import * as jwt from "jsonwebtoken";
 import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
@@ -96,7 +97,7 @@ export class UserService {
     const isPasswordValid = await verify(user.password, password);
     if (!isPasswordValid) throw new Error("Invalid password");
 
-    return user;
+    return jwt.sign(user.id, "SECRET_KEY", { expiresIn: "1h" });
   }
 
   async update(id: string, user: zUserSchemaType) {
