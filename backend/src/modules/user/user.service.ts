@@ -2,7 +2,7 @@ import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
 import { zUserSchemaType } from "./user.dto";
-import { hash } from "argon2";
+import { hash, verify } from "argon2";
 
 export class UserService {
   private readonly db: Partial<DrizzleClientType>;
@@ -83,6 +83,20 @@ export class UserService {
       .returning();
 
     return newUser;
+  }
+
+  async login(cpf: string, password: string) {
+    const [user] = await this.db
+      .select()
+      .from(userSchema)
+      .where(eq(userSchema.cpf, cpf));
+    console.log(user)
+    if (!user) throw new Error("Invalid cpf or password, user not found");
+
+    const isPasswordValid = await verify(user.password, password);
+    if (!isPasswordValid) throw new Error("Invalid password");
+
+    return user;
   }
 
   async update(id: string, user: zUserSchemaType) {
