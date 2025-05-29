@@ -2,6 +2,7 @@ import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
 import { zUserSchemaType } from "./user.dto";
+import { hash } from "argon2";
 
 export class UserService {
   private readonly db: Partial<DrizzleClientType>;
@@ -64,19 +65,20 @@ export class UserService {
       phone_number,
       address,
     } = user;
+    const hashedPassword = await hash(password)
     const newUser = await this.db
       .insert(userSchema)
       .values({
-        role_id,
-        department_id,
-        course_id,
-        name,
-        password,
-        email,
-        cpf,
-        registration,
-        phone_number,
-        address,
+        role_id: role_id,
+        department_id: department_id,
+        course_id: course_id,
+        name: name,
+        password: hashedPassword,
+        email: email,
+        cpf: cpf,
+        registration: registration,
+        phone_number: phone_number,
+        address: address,
       })
       .returning();
 
