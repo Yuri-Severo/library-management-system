@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { FONTS } from '@/lib/fonts';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: '🧙‍♂️ Bibliomancer - O Sistema que o Isaac Usaria se Tivesse Tempo',
@@ -15,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${FONTS.inter.variable} antialiased`}>{children}</body>
+      <body className={`${FONTS.inter.variable} antialiased`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
