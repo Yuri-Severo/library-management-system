@@ -11,7 +11,7 @@ export const bookSchema = pgTable("Book", {
   created_at: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
-  updated_at: timestamp("created_at", { withTimezone: true })
+  updated_at: timestamp("updated_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
 });
