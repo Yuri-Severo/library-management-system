@@ -24,12 +24,15 @@ const buttonVariants = cva(
         ghost:
           'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
+        comeBack:
+          'group rounded-full self-start text-black/60 ring-2 ring-black/60 transition-all hover:ring-black focus-visible:ring-black focus-visible:outline-offset-4 focus-visible:outline-purple-600 active:ring-black/80',
       },
       size: {
         default: 'min-h-9 px-4 py-2',
         sm: 'min-h-6 rounded-md gap-1.5 px-3',
         lg: 'px-8 py-4 rounded-full',
         icon: 'size-9',
+        comeBack: 'p-2',
       },
     },
     defaultVariants: {
