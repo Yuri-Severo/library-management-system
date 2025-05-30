@@ -16,7 +16,7 @@ export class BookService {
   }
 
   async getOne(id: string) {
-    const book = await this.db
+    const [book] = await this.db
       .select()
       .from(bookSchema)
       .where(eq(bookSchema.id, id));
@@ -42,7 +42,7 @@ export class BookService {
   async update(id: string, book: zBookSchemaType) {
     const [updatedBook] = await this.db
       .update(bookSchema)
-      .set({ ...book })
+      .set({ ...book, updated_at: new Date()})
       .where(eq(bookSchema.id, id))
       .returning();
 
