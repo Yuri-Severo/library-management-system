@@ -24,28 +24,16 @@ export class LoanService {
     return loan;
   }
 
-  async create(loan) {
+  async create(loan: zLoanSchemaType) {
     const {
-      bookId,
-      userId,
-      loanDate,
-      dueDate,
-      returnedDate,
-      fineAmount,
-      fineStatus,
-      status,
+      book_id,
+      user_id,
     } = loan;
     const [newLoan] = await this.db
       .insert(loanSchema)
       .values({
-        book_id: bookId,
-        user_id: userId,
-        loan_date: loanDate,
-        due_date: dueDate,
-        returned_date: returnedDate,
-        fine_amount: fineAmount,
-        fine_status: fineStatus,
-        status,
+        book_id: book_id,
+        user_id: user_id,
       })
       .returning();
 
