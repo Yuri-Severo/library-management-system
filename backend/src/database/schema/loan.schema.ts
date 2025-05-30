@@ -10,7 +10,7 @@ import { userSchema } from "./user.schema";
 import { bookSchema } from "./book.schema";
 
 export const loanSchema = pgTable("Loan", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: uuid("id").$defaultFn(() => sql`gen_random_uuid()`).primaryKey(),
   book_id: uuid("book_id")
     .notNull()
     .references(() => bookSchema.id, { onDelete: "cascade" }),
