@@ -1,5 +1,11 @@
 import { relations, sql } from "drizzle-orm";
-import { pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  numeric,
+  pgTable,
+  timestamp,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { bookSchema } from "./book.schema";
 import { userSchema } from "./user.schema";
 
@@ -11,10 +17,18 @@ export const loanSchema = pgTable("Loan", {
   user_id: uuid("user_id")
     .notNull()
     .references(() => userSchema.id, { onDelete: "cascade" }),
-  title: varchar("title", { length: 255 }).notNull(),
-  code: varchar("code", { length: 255 }).notNull(),
-  isbn: varchar("isbn", { length: 255 }).notNull(),
-  status: varchar("status", { length: 255 }).notNull(),
+  loan_date: timestamp("loan_date", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  due_date: timestamp("due_date", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  returned_date: timestamp("returned_date", { withTimezone: true }).default(
+    sql`CURRENT_TIMESTAMP`
+  ),
+  fine_amount: numeric("fine_amount", { precision: 8, scale: 2 }),
+  fine_status: varchar("fine_status", { length: 20 }).notNull(),
+  status: varchar("status", { length: 20 }).notNull(),
   created_at: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
