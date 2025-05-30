@@ -49,6 +49,16 @@ export class BookService {
     return updatedBook;
   }
 
+  async updateStatus(id: string, status: string) {
+    const [updatedBook] = await this.db
+      .update(bookSchema)
+      .set({ status: status, updated_at: new Date()})
+      .where(eq(bookSchema.id, id))
+      .returning();
+
+    return updatedBook;
+  }
+
   async delete(id: string) {
     const [deletedBook] = await this.db
       .delete(bookSchema)
