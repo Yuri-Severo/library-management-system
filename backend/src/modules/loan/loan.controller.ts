@@ -66,7 +66,7 @@ export class LoanController {
       !dueDate ||
       !fineAmount ||
       !fineStatus ||
-      !status ||) {
+      !status) {
         return res.json({
           error: "missing value",
           message: "A value is missing, can't create",
