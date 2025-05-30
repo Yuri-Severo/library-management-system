@@ -50,37 +50,16 @@ export class LoanController {
     next: NextFunction
   ) {
     try {
-      const {
-        bookId,
-        userId,
-        loanDate,
-        dueDate,
-        returnedDate,
-        fineAmount,
-        fineStatus,
-        status,
-      } = req.body;
-      if (!bookId ||
-      !userId ||
-      !loanDate ||
-      !dueDate ||
-      !fineAmount ||
-      !fineStatus ||
-      !status) {
+      const { book_id, user_id } = req.body;
+      if (!book_id || !user_id) {
         return res.json({
           error: "missing value",
           message: "A value is missing, can't create",
         });
       }
       const validatedData = zLoanSchema.parse({
-        bookId,
-        userId,
-        loanDate,
-        dueDate,
-        returnedDate,
-        fineAmount,
-        fineStatus,
-        status,
+        book_id,
+        user_id,
       });
       const newLoan = await this.loanService.create(validatedData);
       return res.status(201).json(newLoan);
