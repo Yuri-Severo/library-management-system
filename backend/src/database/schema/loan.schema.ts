@@ -1,16 +1,16 @@
-import { relations, sql } from "drizzle-orm";
 import {
-  numeric,
   pgTable,
-  timestamp,
   uuid,
+  timestamp,
+  numeric,
   varchar,
 } from "drizzle-orm/pg-core";
-import { bookSchema } from "./book.schema";
+import { relations, sql } from "drizzle-orm";
 import { userSchema } from "./user.schema";
+import { bookSchema } from "./book.schema";
 
 export const loanSchema = pgTable("Loan", {
-  id: uuid().$defaultFn(() => sql`gen_random_uuid()`),
+  id: uuid("id").primaryKey().defaultRandom(),
   book_id: uuid("book_id")
     .notNull()
     .references(() => bookSchema.id, { onDelete: "cascade" }),
@@ -18,26 +18,25 @@ export const loanSchema = pgTable("Loan", {
     .notNull()
     .references(() => userSchema.id, { onDelete: "cascade" }),
   loan_date: timestamp("loan_date", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
   due_date: timestamp("due_date", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-  returned_date: timestamp("returned_date", { withTimezone: true }).default(
-    sql`CURRENT_TIMESTAMP`
-  ),
-  fine_amount: numeric("fine_amount", { precision: 8, scale: 2 }),
-  fine_status: varchar("fine_status", { length: 20 }).notNull(),
-  status: varchar("status", { length: 20 }).notNull(),
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP + INTERVAL '7 days'`),
+  returned_date: timestamp("returned_date", { withTimezone: true }),
+  fine_amount: numeric("fine_amount", { precision: 8, scale: 2 })
+    .notNull()
+    .default("0"),
+  fine_status: varchar("fine_status", { length: 50 })
+    .notNull()
+    .default("no_fine"),
+  status: varchar("status", { length: 50 }).notNull().default("open"),
   created_at: timestamp("created_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
-  updated_at: timestamp("created_at", { withTimezone: true })
-    .default(sql`CURRENT_TIMESTAMP`)
-    .notNull(),
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const loanRelations = relations(loanSchema, ({ one, many }) => ({
+export const loanRelations = relations(loanSchema, ({ one }) => ({
   book: one(bookSchema, {
     fields: [loanSchema.book_id],
     references: [bookSchema.id],
