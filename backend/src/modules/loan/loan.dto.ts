@@ -10,3 +10,5 @@ export const zLoanSchema = z.object({
     fine_status: z.boolean(),
     status: z.string(),
 });
+
+export type zLoanSchema = z.infer<typeof zLoanSchema>;
