@@ -2,6 +2,7 @@ import { loanSchema } from "../../database/schema/loan.schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
 import { zLoanSchemaType } from "./loan.dto";
+import { bookSchema } from "@/database/schema/book.schema";
 
 export class LoanService {
   private readonly db: Partial<DrizzleClientType>;
@@ -25,19 +26,24 @@ export class LoanService {
   }
 
   async create(loan: zLoanSchemaType) {
-    const {
-      book_id,
-      user_id,
-    } = loan;
-    const [newLoan] = await this.db
-      .insert(loanSchema)
-      .values({
-        book_id: book_id,
-        user_id: user_id,
-      })
-      .returning();
+    await this.db.transaction(async (tx) => {
+      const { book_id, user_id } = loan;
 
-    return newLoan;
+      const [newLoan] = await tx
+        .insert(loanSchema)
+        .values({
+          book_id: book_id,
+          user_id: user_id,
+        })
+        .returning();
+
+      await tx
+        .update(bookSchema)
+        .set({ status: "loaned" })
+        .where(eq(bookSchema.id, book_id));
+
+      return newLoan;
+    });
   }
 
   async update(id: string, loan: zLoanSchemaType) {
