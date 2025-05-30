@@ -50,15 +50,15 @@ export class BookController {
     next: NextFunction
   ) {
     try {
-      const { title } = req.body;
-      if (!title) {
+      const { title, code, isbn, status} = req.body;
+      if (!title || !code || !isbn || !status) {
         return res.json({
           error: "missing value",
           message: "A value is missing, can't create",
         });
       }
       const validatedData = zBookSchema.parse({
-        title,
+        title, code, isbn, status
       });
       const newBook = await this.bookService.create(validatedData);
       return res.status(201).json(newBook);
