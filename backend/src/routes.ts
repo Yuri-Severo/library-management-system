@@ -11,6 +11,6 @@ routes.use("/course", courseRouter);
 routes.use("/role", roleRouter);
 routes.use("/department", departmentRouter);
 routes.use("/user", userRouter);
-routes.use("/loan",loanRouter)
+routes.use("/loan", loanRouter)
 
 export { routes };
