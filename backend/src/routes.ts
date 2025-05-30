@@ -4,6 +4,7 @@ import { roleRouter } from "./modules/role/role.routes";
 import { departmentRouter } from "./modules/department/department.routes";
 import { userRouter } from "./modules/user/user.routes";
 import { loanRouter } from "./modules/loan/course.routes";
+import { bookRouter } from "./modules/book/book.routes";
 
 const routes: Router = Router();
 
@@ -12,5 +13,6 @@ routes.use("/role", roleRouter);
 routes.use("/department", departmentRouter);
 routes.use("/user", userRouter);
 routes.use("/loan", loanRouter)
+routes.use("/book", bookRouter);
 
 export { routes };
