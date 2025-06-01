@@ -3,6 +3,7 @@ import { validateCPF, zUserPartialUpdateSchema, zUserSchema, zUserSchemaType, zU
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
+import { cp } from "fs";
 //TODO: LOGIN METHOD
 //TODO: VERIFY ROLE INSIDE METHODS
 //TODO: USER RETURNS INFO BASED ON THE ROLE
@@ -17,12 +18,32 @@ export class UserController {
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await this.userService.getAll();
+      //const requestingUserRole = req.user.role;
       if (users.length === 0) {
         return res.status(404).json({
           error: "Not Found",
           message: "There's no users",
         });
       }
+      //  if(requestingUserRole === "Admin"){
+      //    return res.status(200).json(users);
+      //  } else if(requestingUserRole === "Librarian"){
+      // const filteredUsers = users.map(user => ({
+      //   name: user.name,
+      //   email: user.email,
+      //   phone_number: user.phone_number,
+      //   address: user.address,
+      //   fine_amount: user.fine_amount,
+      //   registration: user.registration,
+      //   cpf: user.cpf
+      // }))
+      //    return res.status(200).json(filteredUsers);
+      //  } else {
+      //  return res.status(400).json({
+      //    error: "Bad Request",
+      //    message: "This user does not have permission to see this data",
+      //  });
+      // }
       res.status(200).json(users);
     } catch (error) {
       return res.status(500).json(error);
@@ -32,6 +53,7 @@ export class UserController {
   static async getOneById(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id;
+      //const requestingUserRole = req.user.role;
       if (!isUuid(id)) {
         return res.status(400).json({
           error: "Invalid ID",
@@ -45,6 +67,17 @@ export class UserController {
           message: "User was not found",
         });
       }
+      // if(requestingUserRole === "Admin"){
+      //   return res.status(200).json(user);
+      // } else if(requestingUserRole === "Librarian"){
+      //   const {name, email, phone_number, address, fine_amount, registration,cpf} = user;
+      //   return res.status(200).json({name, email, phone_number, address, fine_amount, registration, cpf});
+      // } else {
+      // return res.status(400).json({
+      //   error: "Bad Request",
+      //   message: "This user does not have permission to see this data",
+      // });
+      //}
       res.status(200).json(user);
     } catch (error) {
       return res.status(500).json(error);
@@ -54,6 +87,7 @@ export class UserController {
   static async getByName(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name;
+      //const requestingUserRole = req.user.role;
       if(!name){
         return res.status(400).json({
           error: "Bad Request",
@@ -67,6 +101,17 @@ export class UserController {
           message: "None user was found",
         });
       }
+      // if(requestingUserRole === "Admin"){
+      //   return res.status(200).json(user);
+      // } else if(requestingUserRole === "Librarian"){
+      //   const {name, email, phone_number, address, fine_amount, registration,cpf} = user;
+      //   return res.status(200).json({name, email, phone_number, address, fine_amount, registration, cpf});
+      // } else {
+      // return res.status(400).json({
+      //   error: "Bad Request",
+      //   message: "This user does not have permission to see this data",
+      // });
+      //}
       res.status(200).json(users);
     } catch (error) {
       return res.status(500).json(error);
@@ -76,6 +121,7 @@ export class UserController {
   static async getOneByRegistration(req: Request, res: Response, next: NextFunction) {
     try {
       const registration = req.params.registration;
+      //const requestingUserRole = req.user.role;
       if(!registration){
         return res.status(400).json({
           error: "Bad Request",
@@ -90,6 +136,17 @@ export class UserController {
           message: "User was not found",
         });
       }
+      // if(requestingUserRole === "Admin"){
+      //   return res.status(200).json(user);
+      // } else if(requestingUserRole === "Librarian"){
+      //   const {name, email, phone_number, address, fine_amount, registration,cpf} = user;
+      //   return res.status(200).json({name, email, phone_number, address, fine_amount, registration, cpf});
+      // } else {
+      // return res.status(400).json({
+      //   error: "Bad Request",
+      //   message: "This user does not have permission to see this data",
+      // });
+      //}
       res.status(200).json(user);
     } catch (error) {
       return res.status(500).json(error);
@@ -99,6 +156,7 @@ export class UserController {
   static async getOneByCpf(req: Request, res: Response, next: NextFunction) {
     try {
       const cpf = req.params.cpf;
+      //const requestingUserRole = req.user.role;
       if(!cpf){
         return res.status(400).json({
           error: "Bad Request",
@@ -118,6 +176,17 @@ export class UserController {
           message: "User was not found",
         });
       }
+      // if(requestingUserRole === "Admin"){
+      //   return res.status(200).json(user);
+      // } else if(requestingUserRole === "Librarian"){
+      //   const {name, email, phone_number, address, fine_amount, registration,cpf} = user;
+      //   return res.status(200).json({name, email, phone_number, address, fine_amount, registration, cpf});
+      // } else {
+      // return res.status(400).json({
+      //   error: "Bad Request",
+      //   message: "This user does not have permission to see this data",
+      // });
+      //}
       res.status(200).json(user);
     } catch (error) {
       return res.status(500).json(error);
