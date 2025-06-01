@@ -76,6 +76,13 @@ export class LoanController {
         });
       }
 
+      if(user.fine_amount > 0) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "This user has an outstanding fine, cannot create a loan for him",
+        });
+      }
+
       const userLoans = await this.userService.getLoansByUserId(user_id);
       if( userLoans === 3 ) {
         return res.status(400).json({
