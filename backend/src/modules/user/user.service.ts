@@ -1,8 +1,9 @@
 import { userSchema } from "../../database/schema";
 import { DrizzleClientType } from "../../database/db.connection";
-import { eq } from "drizzle-orm";
+import { and, count, eq } from "drizzle-orm";
 import { zUserSchemaType } from "./user.dto";
 import { hash } from "argon2";
+import { loanSchema } from '../../database/schema/loan.schema';
 
 export class UserService {
   private readonly db: Partial<DrizzleClientType>;
@@ -50,6 +51,20 @@ export class UserService {
       .where(eq(userSchema.registration, registration));
 
     return user;
+  }
+
+  async getLoansByUserId(userId: string) {
+    const [{ total }] = await this.db
+    .select({ total: count() })
+    .from(loanSchema)
+    .where(
+      and(
+        eq(loanSchema.user_id, userId),
+        eq(loanSchema.status, 'open')
+      )
+    );
+
+  return total ?? 0;
   }
 
   async register(user: zUserSchemaType) {
