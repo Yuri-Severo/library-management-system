@@ -68,7 +68,6 @@ export class LoanController {
           message: "User not found",
         });
       }
-      
       const book = await this.bookService.getOne(book_id);
       if (!book) {
         return res.status(404).json({
@@ -78,9 +77,10 @@ export class LoanController {
       }
 
       if( book.status === "loaned") {
+        const loan = await this.loanService.getOneByBookId(book_id);
         return res.status(400).json({
           error: "Bad Request",
-          message: `Book is already loaned.`
+          message: `Book is already loaned. The expected return date is ${loan.due_date}`,
         });
       }
 
