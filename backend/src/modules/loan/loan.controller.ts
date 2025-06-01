@@ -75,7 +75,15 @@ export class LoanController {
           message: "This user is not active, cannot create a loan for him",
         });
       }
-      
+
+      const userLoans = await this.userService.getLoansByUserId(user_id);
+      if( userLoans === 3 ) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "User already has 3 active loans, cannot create a new one",
+        });
+      }
+
       const book = await this.bookService.getOne(book_id);
       if (!book) {
         return res.status(404).json({
