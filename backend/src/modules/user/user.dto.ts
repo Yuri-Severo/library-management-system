@@ -11,6 +11,7 @@ export const zUserSchema = z.object({
     registration: z.string().nullable(),
     phone_number: z.string(),
     address: z.string(),
+    fine_amount: z.number().default(0),
 });
 
 export const zUserUpdateSchema = z.object({

@@ -64,6 +64,7 @@ export class UserService {
       registration,
       phone_number,
       address,
+      fine_amount
     } = user;
     const hashedPassword = await hash(password)
     const newUser = await this.db
@@ -79,6 +80,7 @@ export class UserService {
         registration: registration,
         phone_number: phone_number,
         address: address,
+        fine_amount: fine_amount,
       })
       .returning();
 

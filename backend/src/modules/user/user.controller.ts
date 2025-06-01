@@ -141,6 +141,7 @@ export class UserController {
         registration,
         phone_number,
         address,
+        fine_amount
       } = req.body;
       if (
         !role_id ||
@@ -168,6 +169,7 @@ export class UserController {
         registration,
         phone_number,
         address,
+        fine_amount
       });
       if(!validateCPF(cpf)){
         return res.status(400).json({
