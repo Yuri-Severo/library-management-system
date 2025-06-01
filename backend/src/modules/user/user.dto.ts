@@ -6,7 +6,7 @@ export const zUserSchema = z.object({
     course_id: z.string().nullable().default(null),
     name: z.string(),
     password: z.string(),
-    email: z.string().nullable(),
+    email: z.string().email().nullable(),
     cpf: z.string(),
     registration: z.string().nullable(),
     phone_number: z.string(),
