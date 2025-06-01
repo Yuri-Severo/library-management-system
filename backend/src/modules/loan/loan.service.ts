@@ -2,7 +2,7 @@ import { loanSchema } from "../../database/schema/loan.schema";
 import { DrizzleClientType } from "../../database/db.connection";
 import { eq } from "drizzle-orm";
 import { zLoanSchemaType } from "./loan.dto";
-import { bookSchema } from "@/database/schema/book.schema";
+import { bookSchema } from "../../database/schema/book.schema";
 
 export class LoanService {
   private readonly db: Partial<DrizzleClientType>;
@@ -26,7 +26,7 @@ export class LoanService {
   }
 
   async create(loan: zLoanSchemaType) {
-    await this.db.transaction(async (tx) => {
+    const result = await this.db.transaction(async (tx) => {
       const { book_id, user_id } = loan;
 
       const [newLoan] = await tx
@@ -44,6 +44,7 @@ export class LoanService {
 
       return newLoan;
     });
+    return result;
   }
 
   async update(id: string, loan: zLoanSchemaType) {
