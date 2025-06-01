@@ -61,6 +61,12 @@ export class LoanController {
           message: "A value is missing, can't create",
         });
       }
+      
+      const validatedData = zLoanSchema.parse({
+        book_id,
+        user_id,
+      });
+
       const user = await this.userService.getOneById(user_id);
       if (!user) {
         return res.status(404).json({
@@ -106,11 +112,6 @@ export class LoanController {
           message: `Book is already loaned. The expected return date is ${loan.due_date}`,
         });
       }
-
-      const validatedData = zLoanSchema.parse({
-        book_id,
-        user_id,
-      });
       const newLoan = await this.loanService.create(validatedData);
       return res.status(201).json(newLoan);
     } catch (error) {
