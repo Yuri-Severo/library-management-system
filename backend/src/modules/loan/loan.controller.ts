@@ -68,6 +68,14 @@ export class LoanController {
           message: "User not found",
         });
       }
+      
+      if (!user.isActive) {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "This user is not active, cannot create a loan for him",
+        });
+      }
+      
       const book = await this.bookService.getOne(book_id);
       if (!book) {
         return res.status(404).json({
