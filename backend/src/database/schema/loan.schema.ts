@@ -2,7 +2,6 @@ import {
   pgTable,
   uuid,
   timestamp,
-  numeric,
   varchar,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
@@ -24,12 +23,6 @@ export const loanSchema = pgTable("Loan", {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP + INTERVAL '7 days'`),
   returned_date: timestamp("returned_date", { withTimezone: true }),
-  fine_amount: numeric("fine_amount", { precision: 8, scale: 2 })
-    .notNull()
-    .default("0"),
-  fine_status: varchar("fine_status", { length: 50 })
-    .notNull()
-    .default("no_fine"),
   status: varchar("status", { length: 50 }).notNull().default("open"),
   created_at: timestamp("created_at", { withTimezone: true })
     .notNull()
