@@ -3,9 +3,13 @@ import { zLoanSchema, zLoanSchemaType } from "./loan.dto";
 import { LoanService } from "./loan.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
+import { UserService } from "../user/user.service";
+import { BookService } from "../book/book.service";
 
 export class LoanController {
   static readonly loanService = new LoanService(db);
+  static readonly userService = new UserService(db);
+  static readonly bookService = new BookService(db);
 
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
@@ -57,6 +61,29 @@ export class LoanController {
           message: "A value is missing, can't create",
         });
       }
+      const user = await this.userService.getOneById(user_id);
+      if (!user) {
+        return res.status(404).json({
+          error: "Not found",
+          message: "User not found",
+        });
+      }
+      
+      const book = await this.bookService.getOne(book_id);
+      if (!book) {
+        return res.status(404).json({
+          error: "Not found",
+          message: "Book not found",
+        });
+      }
+
+      if( book.status === "loaned") {
+        return res.status(400).json({
+          error: "Bad Request",
+          message: `Book is already loaned.`
+        });
+      }
+
       const validatedData = zLoanSchema.parse({
         book_id,
         user_id,
