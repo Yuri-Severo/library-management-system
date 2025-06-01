@@ -17,7 +17,7 @@ export class LoanService {
   }
 
   async getOneById(id: string) {
-    const loan = await this.db
+    const [loan] = await this.db
       .select()
       .from(loanSchema)
       .where(eq(loanSchema.id, id));
@@ -26,7 +26,7 @@ export class LoanService {
   }
 
   async getOneByBookId(book_id: string) {
-    const loan = await this.db
+    const [loan] = await this.db
       .select()
       .from(loanSchema)
       .where(and(eq(loanSchema.book_id, book_id), eq(loanSchema.status, 'open')));
