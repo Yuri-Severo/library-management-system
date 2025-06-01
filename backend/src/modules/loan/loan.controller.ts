@@ -35,7 +35,7 @@ export class LoanController {
           message: "Provided ID is not a valid UUID",
         });
       }
-      const loan = await this.loanService.getOne(id);
+      const loan = await this.loanService.getOneById(id);
       if (!loan) {
         return res.status(404).json({
           error: "Not found",
@@ -105,7 +105,7 @@ export class LoanController {
           message: "Provided ID is not a valid UUID",
         });
       }
-      const loan = await this.loanService.getOne(loanId);
+      const loan = await this.loanService.getOneById(loanId);
       if (!loan) {
         return res.status(404).json({
           error: "Not found",
@@ -128,7 +128,7 @@ export class LoanController {
           message: "Provided ID is not a valid UUID",
         });
       }
-      const loan = await this.loanService.getOne(loanId);
+      const loan = await this.loanService.getOneById(loanId);
       if (!loan) {
         return res.status(404).json({
           error: "Not found",

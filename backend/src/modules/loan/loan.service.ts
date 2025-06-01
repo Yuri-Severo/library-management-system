@@ -16,7 +16,7 @@ export class LoanService {
     return loans;
   }
 
-  async getOne(id: string) {
+  async getOneById(id: string) {
     const loan = await this.db
       .select()
       .from(loanSchema)
