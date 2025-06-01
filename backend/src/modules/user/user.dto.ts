@@ -12,6 +12,7 @@ export const zUserSchema = z.object({
     phone_number: z.string(),
     address: z.string(),
     fine_amount: z.number().default(0),
+    birth_date: z.string(),
 });
 
 export const zUserUpdateSchema = z.object({
