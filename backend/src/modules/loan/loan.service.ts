@@ -1,6 +1,6 @@
 import { loanSchema } from "../../database/schema/loan.schema";
 import { DrizzleClientType } from "../../database/db.connection";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { zLoanSchemaType } from "./loan.dto";
 import { bookSchema } from "../../database/schema/book.schema";
 
@@ -22,6 +22,14 @@ export class LoanService {
       .from(loanSchema)
       .where(eq(loanSchema.id, id));
 
+    return loan;
+  }
+
+  async getOneByBookId(book_id: string) {
+    const loan = await this.db
+      .select()
+      .from(loanSchema)
+      .where(and(eq(loanSchema.book_id, book_id), eq(loanSchema.status, 'open')));
     return loan;
   }
 
