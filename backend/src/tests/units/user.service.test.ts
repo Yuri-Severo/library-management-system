@@ -4,8 +4,6 @@ import { type DrizzleClientType } from "../../database/db.connection";
 import { hash, verify } from "argon2";
 import { zUserSchemaType } from "@/modules/user/user.dto";
 
-
-
 type InsertBuilder = {
   values: jest.Mock<InsertBuilder, [any]>;
   returning: jest.Mock<Promise<zUserSchemaType[]>, [any]>;
