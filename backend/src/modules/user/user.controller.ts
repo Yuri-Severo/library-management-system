@@ -44,6 +44,7 @@ export class UserController {
       // }
       res.status(200).json(users);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -78,6 +79,7 @@ export class UserController {
       //}
       res.status(200).json(user);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -112,6 +114,7 @@ export class UserController {
       //}
       res.status(200).json(users);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -147,6 +150,7 @@ export class UserController {
       //}
       res.status(200).json(user);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -187,6 +191,7 @@ export class UserController {
       //}
       res.status(200).json(user);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -258,6 +263,7 @@ export class UserController {
       const newUser = await this.userService.register(validatedData);
       return res.status(201).json(newUser);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -289,6 +295,7 @@ export class UserController {
       // })
       res.status(200).json(updatedUser);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -345,6 +352,7 @@ export class UserController {
       // })
       res.status(200).json(updatedUser);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -370,6 +378,7 @@ export class UserController {
         .status(200)
         .json({ message: "user deleted successfully", deletedUser });
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
