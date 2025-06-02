@@ -13,9 +13,11 @@ import { createAuditLog } from "../audit_log";
 //TODO: PROTECTION AGAINST CONCURRENT EDITS
 //TODO: Maintaining referential integrity
 export class UserController {
-  static readonly userService = new UserService(db);
-
-  static async getAll(req: Request, res: Response, next: NextFunction) {
+  private readonly userService: Partial<UserService> = new UserService(db);
+  constructor(userService: Partial<UserService>){
+    this.userService = userService;
+  }
+  async getAll(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await this.userService.getAll();
       const requestingUserRole = req.user.role;
@@ -50,7 +52,7 @@ export class UserController {
     }
   }
 
-  static async getOneById(req: Request, res: Response, next: NextFunction) {
+  async getOneById(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id;
       const requestingUserRole = req.user.role;
@@ -83,7 +85,7 @@ export class UserController {
     }
   }
 
-  static async getByName(req: Request, res: Response, next: NextFunction) {
+  async getByName(req: Request, res: Response, next: NextFunction) {
     try {
       const name = req.params.name;
       const requestingUserRole = req.user.role;
@@ -124,7 +126,7 @@ export class UserController {
     }
   }
 
-  static async getOneByRegistration(
+  async getOneByRegistration(
     req: Request,
     res: Response,
     next: NextFunction
@@ -162,7 +164,7 @@ export class UserController {
     }
   }
 
-  static async getOneByCpf(req: Request, res: Response, next: NextFunction) {
+  async getOneByCpf(req: Request, res: Response, next: NextFunction) {
     try {
       const cpf = req.params.cpf;
       const requestingUserRole = req.user.role;
@@ -201,7 +203,7 @@ export class UserController {
     }
   }
 
-  static async register(
+  async register(
     req: Request<{}, {}, zUserSchemaType>,
     res: Response,
     next: NextFunction
@@ -285,7 +287,7 @@ export class UserController {
     }
   }
 
-  static async login(req: Request, res: Response) {
+  async login(req: Request, res: Response) {
     const { cpf, password } = req.body;
     try {
       const token = await this.userService.login(cpf, password);
@@ -304,7 +306,7 @@ export class UserController {
     }
   }
 
-  static async update(req: Request, res: Response, next: NextFunction) {
+  async update(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = zUserUpdateSchema.parse(req.body);
       const userId = req.params.id;
@@ -344,7 +346,7 @@ export class UserController {
     }
   }
 
-  static async updateStatus(req: Request, res: Response, next: NextFunction) {
+  async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
       const reason = req.body.reason;
@@ -407,7 +409,7 @@ export class UserController {
     }
   }
 
-  static async delete(req: Request, res: Response, next: NextFunction) {
+  async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
       if (!isUuid(userId)) {
