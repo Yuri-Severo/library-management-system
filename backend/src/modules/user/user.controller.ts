@@ -4,6 +4,7 @@ import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
 import { cp } from "fs";
+import { createAuditLog } from "../audit_log";
 //TODO: LOGIN METHOD
 //TODO: VERIFY ROLE INSIDE METHODS
 //TODO: USER RETURNS INFO BASED ON THE ROLE
@@ -265,6 +266,7 @@ export class UserController {
     try {
       const validatedData = zUserUpdateSchema.parse(req.body);
       const userId = req.params.id;
+      //const actor_user_id = req.user.id;
       if (!isUuid(userId)) {
         return res.status(400).json({
           error: "Invalid ID",
@@ -279,6 +281,12 @@ export class UserController {
         });
       }
       const updatedUser = await this.userService.update(userId, validatedData);
+      // await createAuditLog({
+      //   action: "UPDATE_USER",
+      //   actor_user_id: actor_user_id,
+      //   target_user_id: userId,
+      //   changed_data: {before: user, after: updatedUser},
+      // })
       res.status(200).json(updatedUser);
     } catch (error) {
       return res.status(500).json(error);
