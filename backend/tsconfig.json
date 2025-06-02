@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "resolveJsonModule": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+     "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+  },
+  "include": ["./src/**/*", "prisma","./test/**/*", "./scripts/**/*", "./*.ts"], 
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts", "**/*.e2e-spec.ts"] 
+}
+

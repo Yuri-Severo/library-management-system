@@ -1,0 +1,987 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Library Management API",
+    "description": "API para gerenciamento de usuários, cursos, cargos e departamentos. Documentação gerada via Swagger.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333/api",
+      "description": "Servidor da API Express"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "password",
+          "cpf",
+          "phone_number",
+          "address",
+          "role_id",
+          "birth_date"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          },
+          "cpf": {
+            "type": "string",
+            "example": "123.456.789-00"
+          },
+          "registration": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "role_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "department_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "course_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "fine_amount": {
+            "type": "number",
+            "default": 0
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "LoginInput": {
+        "type": "object",
+        "required": ["cpf", "password"],
+        "properties": {
+          "cpf": {
+            "type": "string",
+            "example": "123.456.789-00",
+            "description": "CPF do usuário"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "senha123",
+            "description": "Senha do usuário"
+          }
+        }
+      },
+      "LoanInput": {
+        "type": "object",
+        "required": ["book_id", "user_id"],
+        "properties": {
+          "book_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID do livro que será emprestado"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID do usuário que fará o empréstimo"
+          }
+        }
+      },
+      "Loan": {
+        "type": "object",
+        "required": ["book_id", "user_id"],
+        "properties": {
+          "book_id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" }
+        }
+      },
+      "BookInput": {
+        "type": "object",
+        "required": ["title", "code", "isbn", "status"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Estruturas de Dados e Algoritmos"
+          },
+          "code": {
+            "type": "string",
+            "example": "ED123"
+          },
+          "isbn": {
+            "type": "string",
+            "example": "978-85-7522-250-8"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["available", "loaned", "reserved"],
+            "example": "available"
+          }
+        }
+      },
+      "Book": {
+        "type": "object",
+        "required": ["title", "code", "isbn", "status"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Estruturas de Dados em Java"
+          },
+          "code": { "type": "string", "example": "BIB00123" },
+          "isbn": { "type": "string", "example": "978-3-16-148410-0" },
+          "status": { "type": "string", "example": "available" }
+        }
+      },
+      "AuditLog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "CREATE_USER",
+              "UPDATE_USER",
+              "DELETE_USER",
+              "ENABLE_USER",
+              "DISABLE_USER"
+            ]
+          },
+          "actor_user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "changed_data": {
+            "type": "object",
+            "description": "Objeto JSON contendo os dados alterados (antes e depois)"
+          }
+        },
+        "required": [
+          "action",
+          "actor_user_id",
+          "target_user_id",
+          "occurred_at",
+          "changed_data"
+        ]
+      },
+      "DepartmentInput": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Engenharia de Computação"
+          }
+        }
+      },
+      "Department": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" }
+        }
+      },
+      "RoleInput": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Bibliotecário"
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" }
+        }
+      },
+      "CourseInput": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Engenharia de Computação"
+          }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Registrar novo usuário",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuário criado com sucesso" },
+          "400": { "description": "Erro de validação ou permissão" },
+          "409": { "description": "CPF já cadastrado" }
+        }
+      }
+    },
+    "/user/status/{id}": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Atualizar status do usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "boolean" },
+                  "reason": { "type": "string" }
+                },
+                "required": ["status", "reason"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status atualizado com sucesso" },
+          "400": {
+            "description": "Erro de validação ou empréstimos pendentes"
+          },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "Atualizar usuário por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuário atualizado" },
+          "400": { "description": "ID inválido ou dados incompletos" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Excluir usuário por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário deletado com sucesso" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/user/cpf/{cpf}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por CPF",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "example": "123.456.789-00" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "400": { "description": "CPF inválido" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/user/name/{name}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por nome",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário(s) encontrado(s)" },
+          "400": { "description": "Nome inválido" },
+          "404": { "description": "Nenhum usuário encontrado" }
+        }
+      }
+    },
+    "/user/registration/{registration}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por matrícula",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "registration",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "400": { "description": "Matrícula inválida" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Listar todos os usuários",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de usuários" },
+          "404": { "description": "Nenhum usuário encontrado" }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Login de usuário",
+        "description": "Autentica um usuário com CPF e senha e retorna um token JWT.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Login realizado com sucesso. Token JWT deve ser usado como Bearer nas próximas requisições.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "token": {
+                      "type": "string",
+                      "description": "Token JWT que deve ser enviado no header Authorization como Bearer token.",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  },
+                  "required": ["success", "message", "token"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "CPF ou senha ausentes ou inválidos"
+          },
+          "401": {
+            "description": "Credenciais incorretas"
+          }
+        }
+      }
+    },
+    "/loan": {
+      "post": {
+        "tags": ["Loan"],
+        "summary": "Criar novo empréstimo",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Loan" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Empréstimo criado com sucesso" },
+          "400": { "description": "Erro de validação ou regras de negócio" },
+          "404": { "description": "Usuário ou livro não encontrados" }
+        }
+      }
+    },
+    "/loans": {
+      "get": {
+        "tags": ["Loan"],
+        "summary": "Listar todos os empréstimos",
+        "responses": {
+          "200": { "description": "Lista de empréstimos" },
+          "404": { "description": "Nenhum empréstimo encontrado" }
+        }
+      }
+    },
+    "/loan/{id}": {
+      "get": {
+        "tags": ["Loan"],
+        "summary": "Buscar empréstimo por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Empréstimo encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Empréstimo não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["Loan"],
+        "summary": "Atualizar empréstimo por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Loan" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Empréstimo atualizado com sucesso" },
+          "400": { "description": "Erro de validação" },
+          "404": { "description": "Empréstimo não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["Loan"],
+        "summary": "Excluir empréstimo por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Empréstimo excluído com sucesso" },
+          "404": { "description": "Empréstimo não encontrado" }
+        }
+      }
+    },
+    "/book": {
+      "post": {
+        "tags": ["Book"],
+        "summary": "Cadastrar novo livro",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Book" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Livro criado com sucesso" },
+          "400": { "description": "Dados inválidos" }
+        }
+      }
+    },
+    "/books": {
+      "get": {
+        "tags": ["Book"],
+        "summary": "Listar todos os livros",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de livros retornada com sucesso" },
+          "404": { "description": "Nenhum livro encontrado" }
+        }
+      }
+    },
+    "/book/{id}": {
+      "get": {
+        "tags": ["Book"],
+        "summary": "Buscar livro por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Livro encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Livro não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["Book"],
+        "summary": "Atualizar livro por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Book" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Livro atualizado com sucesso" },
+          "400": { "description": "Dados inválidos ou ID malformado" },
+          "404": { "description": "Livro não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["Book"],
+        "summary": "Deletar livro por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Livro deletado com sucesso" },
+          "404": { "description": "Livro não encontrado" }
+        }
+      }
+    },
+    "/departments": {
+      "get": {
+        "tags": ["Department"],
+        "summary": "Listar todos os departamentos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de departamentos" },
+          "404": { "description": "Nenhum departamento encontrado" }
+        }
+      }
+    },
+    "/department/{id}": {
+      "get": {
+        "tags": ["Department"],
+        "summary": "Buscar departamento por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Departamento encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Departamento não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["Department"],
+        "summary": "Atualizar departamento por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DepartmentInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Departamento atualizado com sucesso" },
+          "400": { "description": "ID inválido ou dados incorretos" },
+          "404": { "description": "Departamento não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["Department"],
+        "summary": "Excluir departamento por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Departamento deletado com sucesso" },
+          "404": { "description": "Departamento não encontrado" }
+        }
+      }
+    },
+    "/department": {
+      "post": {
+        "tags": ["Department"],
+        "summary": "Criar novo departamento",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DepartmentInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Departamento criado com sucesso" },
+          "400": { "description": "Dados inválidos ou incompletos" }
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": ["Role"],
+        "summary": "Listar todos os cargos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de cargos" },
+          "404": { "description": "Nenhum cargo encontrado" }
+        }
+      }
+    },
+    "/role/{id}": {
+      "get": {
+        "tags": ["Role"],
+        "summary": "Buscar cargo por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Cargo encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Cargo não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["Role"],
+        "summary": "Atualizar cargo por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RoleInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Cargo atualizado com sucesso" },
+          "400": { "description": "ID inválido ou dados incorretos" },
+          "404": { "description": "Cargo não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["Role"],
+        "summary": "Excluir cargo por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Cargo deletado com sucesso" },
+          "404": { "description": "Cargo não encontrado" }
+        }
+      }
+    },
+    "/role": {
+      "post": {
+        "tags": ["Role"],
+        "summary": "Criar novo cargo",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RoleInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Cargo criado com sucesso" },
+          "400": { "description": "Dados inválidos ou incompletos" }
+        }
+      }
+    },
+    "/courses": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Listar todos os cursos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de cursos" },
+          "404": { "description": "Nenhum curso encontrado" }
+        }
+      }
+    },
+    "/course/{id}": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Buscar curso por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Curso encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Curso não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["Course"],
+        "summary": "Atualizar curso por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CourseInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Curso atualizado com sucesso" },
+          "400": { "description": "ID inválido ou dados incorretos" },
+          "404": { "description": "Curso não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Excluir curso por ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Curso deletado com sucesso" },
+          "404": { "description": "Curso não encontrado" }
+        }
+      }
+    },
+    "/course": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Criar novo curso",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CourseInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Curso criado com sucesso" },
+          "400": { "description": "Dados inválidos ou incompletos" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "User", "description": "Operações relacionadas a usuários" },
+    {
+      "name": "Loan",
+      "description": "Operações relacionadas a empréstimos de livros"
+    },
+    {
+      "name": "Book",
+      "description": "Operações relacionadas a livros cadastrados"
+    },
+    {
+      "name": "AuditLog",
+      "description": "Registro de ações administrativas para rastreamento e auditoria"
+    },
+    {
+      "name": "Department",
+      "description": "Operações relacionadas a departamentos"
+    },
+    {
+      "name": "Role",
+      "description": "Operações relacionadas aos cargos (roles) do sistema"
+    },
+    {
+      "name": "Course",
+      "description": "Operações relacionadas aos cursos disponíveis no sistema"
+    }
+  ]
+}
