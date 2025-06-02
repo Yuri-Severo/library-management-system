@@ -294,6 +294,7 @@ export class UserController {
     try {
       const userId = req.params.id;
       const status = req.body.status
+      const action = status === true ? "ENABLE_USER" : "DISABLE_USER";
       //const actor_user_id = req.user.id;
 
       // if(actor_user_id !== "Admin"){ {
@@ -333,6 +334,12 @@ export class UserController {
         });
       }
       const updatedUser = await this.userService.updateStatus(userId, status);
+      // await createAuditLog({
+      //   action: action,
+      //   actor_user_id: actor_user_id,
+      //   target_user_id: userId,
+      //   changed_data: {before: user, after: updatedUser},
+      // })
       res.status(200).json(updatedUser);
     } catch (error) {
       return res.status(500).json(error);
