@@ -1,0 +1,545 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Library Management API",
+    "description": "API para gerenciamento de usuários, cursos, cargos e departamentos. Documentação gerada via Swagger.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333/api",
+      "description": "Servidor da API Express"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "password",
+          "cpf",
+          "phone_number",
+          "address",
+          "role_id"
+        ],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "minLength": 6 },
+          "cpf": { "type": "string", "example": "123.456.789-00" },
+          "registration": { "type": "string" },
+          "phone_number": { "type": "string" },
+          "address": { "type": "string" },
+          "role_id": { "type": "string", "format": "uuid" },
+          "department_id": { "type": "string", "format": "uuid" },
+          "course_id": { "type": "string", "format": "uuid" }
+        }
+      },
+      "Course": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Engenharia de Computação"
+          }
+        }
+      },
+      "Role": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Administrador"
+          }
+        }
+      },
+      "Department": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Departamento de Tecnologia"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/user/register": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Registrar novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário criado com sucesso" },
+          "400": { "description": "Dados inválidos ou CPF mal formatado" },
+          "409": { "description": "CPF já cadastrado" }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "Atualizar usuário por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Usuário atualizado" },
+          "400": { "description": "ID inválido ou dados incompletos" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "summary": "Excluir usuário por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário deletado com sucesso" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/user/cpf/{cpf}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por CPF",
+        "parameters": [
+          {
+            "name": "cpf",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "123.456.789-00"
+            }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "400": { "description": "CPF inválido" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/user/name/{name}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por nome",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário(s) encontrado(s)" },
+          "400": { "description": "Nome inválido" },
+          "404": { "description": "Nenhum usuário encontrado" }
+        }
+      }
+    },
+    "/user/registration/{registration}": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Buscar usuário por matrícula",
+        "parameters": [
+          {
+            "name": "registration",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Usuário encontrado" },
+          "400": { "description": "Matrícula inválida" },
+          "404": { "description": "Usuário não encontrado" }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Listar todos os usuários",
+        "responses": {
+          "200": { "description": "Lista de usuários" },
+          "404": { "description": "Nenhum usuário encontrado" }
+        }
+      }
+    },
+    "/course": {
+      "post": {
+        "tags": ["Course"],
+        "summary": "Criar um novo curso",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Curso criado com sucesso" },
+          "400": { "description": "Dados inválidos ou ausentes" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/courses": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Listar todos os cursos",
+        "responses": {
+          "200": { "description": "Lista de cursos retornada com sucesso" },
+          "404": { "description": "Nenhum curso encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/course/{id}": {
+      "get": {
+        "tags": ["Course"],
+        "summary": "Buscar um curso por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Curso encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Curso não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      },
+      "put": {
+        "tags": ["Course"],
+        "summary": "Atualizar curso por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Course"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Curso atualizado com sucesso" },
+          "400": { "description": "ID inválido ou dados incorretos" },
+          "404": { "description": "Curso não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      },
+      "delete": {
+        "tags": ["Course"],
+        "summary": "Excluir curso por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Curso deletado com sucesso" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Curso não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/role": {
+      "post": {
+        "tags": ["Role"],
+        "summary": "Criar uma nova função (Role)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Role"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Role criado com sucesso" },
+          "400": { "description": "Dados ausentes ou inválidos" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": ["Role"],
+        "summary": "Listar todas as funções (Roles)",
+        "responses": {
+          "200": { "description": "Lista de roles retornada com sucesso" },
+          "404": { "description": "Nenhum role encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/role/{id}": {
+      "get": {
+        "tags": ["Role"],
+        "summary": "Buscar uma função por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Role encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Role não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      },
+      "put": {
+        "tags": ["Role"],
+        "summary": "Atualizar função por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Role"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Role atualizado com sucesso" },
+          "400": { "description": "ID inválido ou dados incorretos" },
+          "404": { "description": "Role não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      },
+      "delete": {
+        "tags": ["Role"],
+        "summary": "Excluir função por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Role deletado com sucesso" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Role não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/department": {
+      "post": {
+        "tags": ["Department"],
+        "summary": "Criar um novo departamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Department"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Departamento criado com sucesso" },
+          "400": { "description": "Dados ausentes ou inválidos" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/departments": {
+      "get": {
+        "tags": ["Department"],
+        "summary": "Listar todos os departamentos",
+        "responses": {
+          "200": {
+            "description": "Lista de departamentos retornada com sucesso"
+          },
+          "404": { "description": "Nenhum departamento encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    },
+    "/department/{id}": {
+      "get": {
+        "tags": ["Department"],
+        "summary": "Buscar um departamento por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Departamento encontrado" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Departamento não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      },
+      "put": {
+        "tags": ["Department"],
+        "summary": "Atualizar departamento por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Department"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Departamento atualizado com sucesso" },
+          "400": { "description": "ID inválido ou dados incorretos" },
+          "404": { "description": "Departamento não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      },
+      "delete": {
+        "tags": ["Department"],
+        "summary": "Excluir departamento por ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Departamento deletado com sucesso" },
+          "400": { "description": "ID inválido" },
+          "404": { "description": "Departamento não encontrado" },
+          "500": { "description": "Erro interno no servidor" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "User", "description": "Operações relacionadas a usuários" },
+    {
+      "name": "Course",
+      "description": "Operações relacionadas ao gerenciamento de cursos"
+    },
+    {
+      "name": "Role",
+      "description": "Operações relacionadas aos cargos (Roles) de usuários"
+    },
+    {
+      "name": "Department",
+      "description": "Operações relacionadas aos departamentos dos usuários"
+    }
+  ]
+}
