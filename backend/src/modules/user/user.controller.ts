@@ -6,9 +6,6 @@ import { validate as isUuid } from "uuid";
 import { cp } from "fs";
 import { createAuditLog } from "../audit_log";
 //TODO: LOGIN METHOD
-//TODO: VERIFY ROLE INSIDE METHODS
-//TODO: USER RETURNS INFO BASED ON THE ROLE
-//TODO: WHEN UPDATE, SEND IT TO AUDIT_LOGS (WHO,WHEN,WHAT)
 //TODO: PROTECTION AGAINST CONCURRENT EDITS
 //TODO: Maintaining referential integrity
 //TODO: VERIFY PENDING LOANS
