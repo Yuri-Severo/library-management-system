@@ -8,11 +8,11 @@ export const zUserSchema = z.object({
     password: z.string(),
     email: z.string().email().nullable(),
     cpf: z.string(),
-    registration: z.string().nullable(),
+    registration: z.string().nullable().default(null),
     phone_number: z.string(),
     address: z.string(),
     fine_amount: z.number().default(0),
-    birth_date: z.string(),
+    birth_date: z.string().date(),
 });
 
 export const zUserUpdateSchema = z.object({

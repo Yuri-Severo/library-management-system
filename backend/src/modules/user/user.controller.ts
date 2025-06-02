@@ -208,7 +208,8 @@ export class UserController {
         registration,
         phone_number,
         address,
-        fine_amount
+        fine_amount,
+        birth_date
       } = req.body;
       if (
         !role_id ||
@@ -218,7 +219,8 @@ export class UserController {
         !password ||
         !cpf ||
         !phone_number ||
-        !address
+        !address ||
+        !birth_date
       ) {
         return res.json({
           error: "missing value",
@@ -236,7 +238,8 @@ export class UserController {
         registration,
         phone_number,
         address,
-        fine_amount
+        fine_amount,
+        birth_date
       });
       if(!validateCPF(cpf)){
         return res.status(400).json({
