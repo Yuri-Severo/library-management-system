@@ -14,9 +14,9 @@ type SelectBuilder = {
   where: jest.Mock<Promise<zUserSchemaType[]>, [any]>;
 };
 
-describe("AuthService ", () => {
+describe("UserService ", () => {
   let dbMock: Partial<DrizzleClientType>;
-  let authService: any;
+  let userService: any;
 
   const password = "abc";
 
@@ -52,6 +52,6 @@ describe("AuthService ", () => {
       select: jest.fn().mockReturnValue(selectBuilder),
     };
 
-    authService = new UserService(dbMock);
+    userService = new UserService(dbMock);
   });
 });
