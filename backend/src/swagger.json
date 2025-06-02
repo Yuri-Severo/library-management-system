@@ -258,7 +258,7 @@
     }
   ],
   "paths": {
-    "/user/register": {
+    "/user/user/register": {
       "post": {
         "tags": ["User"],
         "summary": "Registrar novo usuário",
@@ -278,7 +278,7 @@
         }
       }
     },
-    "/user/status/{id}": {
+    "/user/user/status/{id}": {
       "put": {
         "tags": ["User"],
         "summary": "Atualizar status do usuário",
@@ -315,7 +315,7 @@
         }
       }
     },
-    "/user/{id}": {
+    "/user/user/{id}": {
       "get": {
         "tags": ["User"],
         "summary": "Buscar usuário por ID",
@@ -378,7 +378,7 @@
         }
       }
     },
-    "/user/cpf/{cpf}": {
+    "/user/user/cpf/{cpf}": {
       "get": {
         "tags": ["User"],
         "summary": "Buscar usuário por CPF",
@@ -398,7 +398,7 @@
         }
       }
     },
-    "/user/name/{name}": {
+    "/user/user/name/{name}": {
       "get": {
         "tags": ["User"],
         "summary": "Buscar usuário por nome",
@@ -418,7 +418,7 @@
         }
       }
     },
-    "/user/registration/{registration}": {
+    "/user/user/registration/{registration}": {
       "get": {
         "tags": ["User"],
         "summary": "Buscar usuário por matrícula",
@@ -438,7 +438,7 @@
         }
       }
     },
-    "/users": {
+    "/user/users": {
       "get": {
         "tags": ["User"],
         "summary": "Listar todos os usuários",
@@ -449,7 +449,7 @@
         }
       }
     },
-    "/user/login": {
+    "/user/user/login": {
       "post": {
         "tags": ["User"],
         "summary": "Login de usuário",
@@ -494,7 +494,7 @@
         }
       }
     },
-    "/loan": {
+    "/loan/loan": {
       "post": {
         "tags": ["Loan"],
         "summary": "Criar novo empréstimo",
@@ -514,7 +514,7 @@
         }
       }
     },
-    "/loans": {
+    "/loan/loans": {
       "get": {
         "tags": ["Loan"],
         "summary": "Listar todos os empréstimos",
@@ -524,7 +524,7 @@
         }
       }
     },
-    "/loan/{id}": {
+    "/loan/loan/{id}": {
       "get": {
         "tags": ["Loan"],
         "summary": "Buscar empréstimo por ID",
@@ -584,7 +584,7 @@
         }
       }
     },
-    "/book": {
+    "/book/book": {
       "post": {
         "tags": ["Book"],
         "summary": "Cadastrar novo livro",
@@ -603,7 +603,7 @@
         }
       }
     },
-    "/books": {
+    "/book/books": {
       "get": {
         "tags": ["Book"],
         "summary": "Listar todos os livros",
@@ -614,7 +614,7 @@
         }
       }
     },
-    "/book/{id}": {
+    "/book/book/{id}": {
       "get": {
         "tags": ["Book"],
         "summary": "Buscar livro por ID",
@@ -677,7 +677,7 @@
         }
       }
     },
-    "/departments": {
+    "/department/departments": {
       "get": {
         "tags": ["Department"],
         "summary": "Listar todos os departamentos",
@@ -688,7 +688,7 @@
         }
       }
     },
-    "/department/{id}": {
+    "/department/department/{id}": {
       "get": {
         "tags": ["Department"],
         "summary": "Buscar departamento por ID",
@@ -751,7 +751,7 @@
         }
       }
     },
-    "/department": {
+    "/department/department": {
       "post": {
         "tags": ["Department"],
         "summary": "Criar novo departamento",
@@ -770,7 +770,7 @@
         }
       }
     },
-    "/roles": {
+    "/role/roles": {
       "get": {
         "tags": ["Role"],
         "summary": "Listar todos os cargos",
@@ -781,7 +781,7 @@
         }
       }
     },
-    "/role/{id}": {
+    "/role/role/{id}": {
       "get": {
         "tags": ["Role"],
         "summary": "Buscar cargo por ID",
@@ -844,7 +844,7 @@
         }
       }
     },
-    "/role": {
+    "/role/role": {
       "post": {
         "tags": ["Role"],
         "summary": "Criar novo cargo",
@@ -863,7 +863,7 @@
         }
       }
     },
-    "/courses": {
+    "/course/courses": {
       "get": {
         "tags": ["Course"],
         "summary": "Listar todos os cursos",
@@ -874,7 +874,7 @@
         }
       }
     },
-    "/course/{id}": {
+    "/course/course/{id}": {
       "get": {
         "tags": ["Course"],
         "summary": "Buscar curso por ID",
@@ -937,7 +937,7 @@
         }
       }
     },
-    "/course": {
+    "/course/course": {
       "post": {
         "tags": ["Course"],
         "summary": "Criar novo curso",
