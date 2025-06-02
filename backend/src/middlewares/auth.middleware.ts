@@ -5,8 +5,6 @@ import { userSchema } from '../database/schema/user.schema';
 import { roleSchema } from '../database/schema/role.schema';
 import { eq } from 'drizzle-orm';
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-
 // Extend Express Request interface to include 'user'
 declare global {
   namespace Express {
@@ -28,7 +26,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       }
 
       const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+      const decoded = jwt.verify(token, "JWT_SECRET") as { id: string };
 
       if (!decoded.id) {
         return res.status(401).json({ message: 'Invalid token' });
