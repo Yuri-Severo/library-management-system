@@ -33,17 +33,51 @@
         ],
         "properties": {
           "name": { "type": "string" },
-          "email": { "type": "string", "format": "email" },
-          "password": { "type": "string", "minLength": 6 },
-          "cpf": { "type": "string", "example": "123.456.789-00" },
-          "registration": { "type": "string" },
-          "phone_number": { "type": "string" },
-          "address": { "type": "string" },
-          "role_id": { "type": "string", "format": "uuid" },
-          "department_id": { "type": "string", "format": "uuid" },
-          "course_id": { "type": "string", "format": "uuid" },
-          "fine_amount": { "type": "number", "default": 0 },
-          "birth_date": { "type": "string", "format": "date" }
+          "email": {
+            "type": "string",
+            "format": "email",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "minLength": 6
+          },
+          "cpf": {
+            "type": "string",
+            "example": "123.456.789-00"
+          },
+          "registration": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "role_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "department_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "course_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "fine_amount": {
+            "type": "number",
+            "default": 0
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date"
+          }
         }
       },
       "LoginInput": {
@@ -81,23 +115,10 @@
       },
       "Loan": {
         "type": "object",
+        "required": ["book_id", "user_id"],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
           "book_id": { "type": "string", "format": "uuid" },
-          "user_id": { "type": "string", "format": "uuid" },
-          "loan_date": { "type": "string", "format": "date-time" },
-          "due_date": { "type": "string", "format": "date-time" },
-          "returned_date": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "status": {
-            "type": "string",
-            "enum": ["open", "returned", "overdue"],
-            "default": "open"
-          },
-          "created_at": { "type": "string", "format": "date-time" }
+          "user_id": { "type": "string", "format": "uuid" }
         }
       },
       "BookInput": {
@@ -125,17 +146,15 @@
       },
       "Book": {
         "type": "object",
+        "required": ["title", "code", "isbn", "status"],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "title": { "type": "string" },
-          "code": { "type": "string" },
-          "isbn": { "type": "string" },
-          "status": {
+          "title": {
             "type": "string",
-            "enum": ["available", "loaned", "reserved"]
+            "example": "Estruturas de Dados em Java"
           },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "code": { "type": "string", "example": "BIB00123" },
+          "isbn": { "type": "string", "example": "978-3-16-148410-0" },
+          "status": { "type": "string", "example": "available" }
         }
       },
       "AuditLog": {
@@ -243,6 +262,7 @@
       "post": {
         "tags": ["User"],
         "summary": "Registrar novo usuário",
+        "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
           "content": {
@@ -252,9 +272,46 @@
           }
         },
         "responses": {
-          "201": { "description": "Usuário criado com sucesso" },
-          "400": { "description": "Dados inválidos ou CPF mal formatado" },
+          "200": { "description": "Usuário criado com sucesso" },
+          "400": { "description": "Erro de validação ou permissão" },
           "409": { "description": "CPF já cadastrado" }
+        }
+      }
+    },
+    "/user/status/{id}": {
+      "put": {
+        "tags": ["User"],
+        "summary": "Atualizar status do usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "boolean" },
+                  "reason": { "type": "string" }
+                },
+                "required": ["status", "reason"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status atualizado com sucesso" },
+          "400": {
+            "description": "Erro de validação ou empréstimos pendentes"
+          },
+          "404": { "description": "Usuário não encontrado" }
         }
       }
     },
@@ -293,7 +350,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/User" }
+              "schema": { "$ref": "#/components/schemas/UserUpdate" }
             }
           }
         },
@@ -331,10 +388,7 @@
             "name": "cpf",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "example": "123.456.789-00"
-            }
+            "schema": { "type": "string", "example": "123.456.789-00" }
           }
         ],
         "responses": {
@@ -449,18 +503,24 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoanInput"
-              }
+              "schema": { "$ref": "#/components/schemas/Loan" }
             }
           }
         },
         "responses": {
           "201": { "description": "Empréstimo criado com sucesso" },
-          "400": {
-            "description": "Erro de validação, limite excedido ou usuário não elegível"
-          },
-          "404": { "description": "Usuário ou livro não encontrado" }
+          "400": { "description": "Erro de validação ou regras de negócio" },
+          "404": { "description": "Usuário ou livro não encontrados" }
+        }
+      }
+    },
+    "/loans": {
+      "get": {
+        "tags": ["Loan"],
+        "summary": "Listar todos os empréstimos",
+        "responses": {
+          "200": { "description": "Lista de empréstimos" },
+          "404": { "description": "Nenhum empréstimo encontrado" }
         }
       }
     },
@@ -468,7 +528,6 @@
       "get": {
         "tags": ["Loan"],
         "summary": "Buscar empréstimo por ID",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
@@ -486,7 +545,6 @@
       "put": {
         "tags": ["Loan"],
         "summary": "Atualizar empréstimo por ID",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
@@ -499,22 +557,19 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoanInput"
-              }
+              "schema": { "$ref": "#/components/schemas/Loan" }
             }
           }
         },
         "responses": {
           "200": { "description": "Empréstimo atualizado com sucesso" },
-          "400": { "description": "ID inválido ou dados incorretos" },
+          "400": { "description": "Erro de validação" },
           "404": { "description": "Empréstimo não encontrado" }
         }
       },
       "delete": {
         "tags": ["Loan"],
         "summary": "Excluir empréstimo por ID",
-        "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
@@ -524,19 +579,8 @@
           }
         ],
         "responses": {
-          "200": { "description": "Empréstimo deletado com sucesso" },
+          "200": { "description": "Empréstimo excluído com sucesso" },
           "404": { "description": "Empréstimo não encontrado" }
-        }
-      }
-    },
-    "/loans": {
-      "get": {
-        "tags": ["Loan"],
-        "summary": "Listar todos os empréstimos",
-        "security": [{ "bearerAuth": [] }],
-        "responses": {
-          "200": { "description": "Lista de empréstimos" },
-          "404": { "description": "Nenhum empréstimo encontrado" }
         }
       }
     },
@@ -549,15 +593,24 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BookInput"
-              }
+              "schema": { "$ref": "#/components/schemas/Book" }
             }
           }
         },
         "responses": {
-          "201": { "description": "Livro cadastrado com sucesso" },
-          "400": { "description": "Dados inválidos ou incompletos" }
+          "201": { "description": "Livro criado com sucesso" },
+          "400": { "description": "Dados inválidos" }
+        }
+      }
+    },
+    "/books": {
+      "get": {
+        "tags": ["Book"],
+        "summary": "Listar todos os livros",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de livros retornada com sucesso" },
+          "404": { "description": "Nenhum livro encontrado" }
         }
       }
     },
@@ -571,10 +624,7 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
+            "schema": { "type": "string", "format": "uuid" }
           }
         ],
         "responses": {
@@ -592,57 +642,38 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
+            "schema": { "type": "string", "format": "uuid" }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BookInput"
-              }
+              "schema": { "$ref": "#/components/schemas/Book" }
             }
           }
         },
         "responses": {
           "200": { "description": "Livro atualizado com sucesso" },
-          "400": { "description": "ID inválido ou dados incorretos" },
+          "400": { "description": "Dados inválidos ou ID malformado" },
           "404": { "description": "Livro não encontrado" }
         }
       },
       "delete": {
         "tags": ["Book"],
-        "summary": "Excluir livro por ID",
+        "summary": "Deletar livro por ID",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
+            "schema": { "type": "string", "format": "uuid" }
           }
         ],
         "responses": {
           "200": { "description": "Livro deletado com sucesso" },
           "404": { "description": "Livro não encontrado" }
-        }
-      }
-    },
-    "/books": {
-      "get": {
-        "tags": ["Book"],
-        "summary": "Listar todos os livros",
-        "security": [{ "bearerAuth": [] }],
-        "responses": {
-          "200": { "description": "Lista de livros cadastrados" },
-          "404": { "description": "Nenhum livro encontrado" }
         }
       }
     },
