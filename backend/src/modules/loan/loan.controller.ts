@@ -57,6 +57,14 @@ export class LoanController {
   ) {
     try {
       const { book_id, user_id } = req.body;
+      const requestingUserRole = req.user.role;
+
+      if(requestingUserRole !== "Admin" && requestingUserRole !== "Librarian") {
+       return res.status(400).json({
+         error: "Bad Request",
+         message: "This user does not have permission to do this action",
+       });
+      }
       if (!book_id || !user_id) {
         return res.json({
           error: "missing value",
