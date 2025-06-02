@@ -25,7 +25,8 @@ export const zUserUpdateSchema = z.object({
     registration: z.string().nullable(),
     phone_number: z.string(),
     address: z.string(),
-    isActive: z.boolean()
+    isActive: z.boolean(),
+    reason: z.string(),
 });
 
 export type zUserSchemaType = z.infer<typeof zUserSchema>;

@@ -221,6 +221,14 @@ export class UserController {
         fine_amount,
         birth_date,
       } = req.body;
+      const requestingUserRole = req.user.role;
+      if(requestingUserRole !== "Admin" && requestingUserRole !== "Librarian"){
+       return res.status(400).json({
+         error: "Bad Request",
+         message: "This user does not have permission to do this action",
+       });
+      }
+      
       if (
         !role_id ||
         (!department_id && !course_id) ||
@@ -296,6 +304,14 @@ export class UserController {
       const validatedData = zUserUpdateSchema.parse(req.body);
       const userId = req.params.id;
       const actor_user_id = req.user.id;
+      const requestingUserRole = req.user.role;
+
+      if(requestingUserRole !== "Admin" && requestingUserRole !== "Librarian"){
+       return res.status(400).json({
+         error: "Bad Request",
+         message: "This user does not have permission to do this action",
+       });
+      }
       if (!isUuid(userId)) {
         return res.status(400).json({
           error: "Invalid ID",
@@ -326,6 +342,7 @@ export class UserController {
   static async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
+      const reason = req.body.reason;
       const status = req.body.status;
       const action = status === true ? "ENABLE_USER" : "DISABLE_USER";
       const actor_user_id = req.user.id;
@@ -340,6 +357,7 @@ export class UserController {
 
       const validatedData = zUserPartialUpdateSchema.safeParse({
         status: status,
+        reason: reason,
       });
       if (!validatedData.success) {
         return res.status(400).json({
@@ -375,7 +393,7 @@ export class UserController {
         action: action,
         actor_user_id: actor_user_id,
         target_user_id: userId,
-        changed_data: {before: user, after: updatedUser},
+        changed_data: {before: user, after: updatedUser, reason: reason},
       })
       res.status(200).json(updatedUser);
     } catch (error) {
