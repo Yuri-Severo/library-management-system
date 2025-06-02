@@ -142,15 +142,7 @@ export class UserService {
     );
 
     // Return user info and token
-    return {
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        cpf: user.cpf,
-        role: role.title,
-      },
-    };
+    return token
   }
 
   async update(id: string, user: zUserSchemaType) {

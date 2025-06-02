@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { validateCPF, zUserPartialUpdateSchema, zUserSchema, zUserSchemaType, zUserUpdateSchema } from "./user.dto";
+import {
+  validateCPF,
+  zUserPartialUpdateSchema,
+  zUserSchema,
+  zUserSchemaType,
+  zUserUpdateSchema,
+} from "./user.dto";
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
@@ -44,7 +50,7 @@ export class UserController {
       // }
       res.status(200).json(users);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -79,7 +85,7 @@ export class UserController {
       //}
       res.status(200).json(user);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -88,7 +94,7 @@ export class UserController {
     try {
       const name = req.params.name;
       //const requestingUserRole = req.user.role;
-      if(!name){
+      if (!name) {
         return res.status(400).json({
           error: "Bad Request",
           message: "Must have a name for this search",
@@ -114,23 +120,27 @@ export class UserController {
       //}
       res.status(200).json(users);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
 
-  static async getOneByRegistration(req: Request, res: Response, next: NextFunction) {
+  static async getOneByRegistration(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const registration = req.params.registration;
       //const requestingUserRole = req.user.role;
-      if(!registration){
+      if (!registration) {
         return res.status(400).json({
           error: "Bad Request",
           message: "Must have a registration for this search",
         });
       }
       const user = await this.userService.getOneByRegistration(registration);
-      
+
       if (!user) {
         return res.status(404).json({
           error: "Not found",
@@ -150,7 +160,7 @@ export class UserController {
       //}
       res.status(200).json(user);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -159,13 +169,13 @@ export class UserController {
     try {
       const cpf = req.params.cpf;
       //const requestingUserRole = req.user.role;
-      if(!cpf){
+      if (!cpf) {
         return res.status(400).json({
           error: "Bad Request",
           message: "Must have a cpf for this search",
         });
       }
-      if(!validateCPF(cpf)){
+      if (!validateCPF(cpf)) {
         return res.status(400).json({
           error: "Bad Request",
           message: "Invalid sintax for CPF",
@@ -191,7 +201,7 @@ export class UserController {
       //}
       res.status(200).json(user);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -214,12 +224,11 @@ export class UserController {
         phone_number,
         address,
         fine_amount,
-        birth_date
+        birth_date,
       } = req.body;
       if (
         !role_id ||
-        !department_id &&
-        !course_id ||
+        (!department_id && !course_id) ||
         !name ||
         !password ||
         !cpf ||
@@ -244,16 +253,16 @@ export class UserController {
         phone_number,
         address,
         fine_amount,
-        birth_date
+        birth_date,
       });
-      if(!validateCPF(cpf)){
+      if (!validateCPF(cpf)) {
         return res.status(400).json({
           error: "Invalid value",
           message: "Invalid sintax for CPF",
         });
       }
-      const existingUser = await this.userService.getOneByCpf(cpf)
-      if(existingUser){
+      const existingUser = await this.userService.getOneByCpf(cpf);
+      if (existingUser) {
         return res.json({
           error: "Cpf already registered",
           message: "The received cpf its already registered!",
@@ -263,7 +272,7 @@ export class UserController {
       const newUser = await this.userService.register(validatedData);
       return res.status(201).json(newUser);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -271,8 +280,17 @@ export class UserController {
   static async login(req: Request, res: Response) {
     const { cpf, password } = req.body;
     try {
-      const result = await this.userService.login(cpf, password);
-      return res.status(200).json(result);
+      const token = await this.userService.login(cpf, password);
+      return res.status(201).cookie("access_token", token, {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      }).json({
+        success:true,
+        message: "Login successful",
+        token: token,
+      })
     } catch (error: any) {
       return res.status(401).json({ message: error.message });
     }
@@ -305,7 +323,7 @@ export class UserController {
       // })
       res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -313,7 +331,7 @@ export class UserController {
   static async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
-      const status = req.body.status
+      const status = req.body.status;
       const action = status === true ? "ENABLE_USER" : "DISABLE_USER";
       //const actor_user_id = req.user.id;
 
@@ -322,15 +340,17 @@ export class UserController {
       //    error: "Bad Request",
       //    message: "This user does not have permission to do this action",
       //  });
-      
-      const validatedData = zUserPartialUpdateSchema.safeParse({status: status})
-      if(!validatedData.success){
+
+      const validatedData = zUserPartialUpdateSchema.safeParse({
+        status: status,
+      });
+      if (!validatedData.success) {
         return res.status(400).json({
           error: "Invalid sintax",
           message: "Invalid data format",
         });
       }
-  
+
       if (!isUuid(userId)) {
         return res.status(400).json({
           error: "Invalid ID",
@@ -345,9 +365,9 @@ export class UserController {
           message: "User was not found",
         });
       }
-      
+
       const userLoans = await this.userService.getLoansByUserId(userId);
-      if(userLoans > 0){
+      if (userLoans > 0) {
         return res.status(400).json({
           error: "Bad Request",
           message: "This user has pending loans, can't change status",
@@ -362,7 +382,7 @@ export class UserController {
       // })
       res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
@@ -388,7 +408,7 @@ export class UserController {
         .status(200)
         .json({ message: "user deleted successfully", deletedUser });
     } catch (error) {
-      console.error("Error in backend: "+ error)
+      console.error("Error in backend: " + error);
       return res.status(500).json(error);
     }
   }
