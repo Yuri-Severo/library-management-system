@@ -1,57 +1,35 @@
-import { userSchema } from "../../database/schema/user.schema";
-import { UserService } from "../../modules/user/user.service";
-import { type DrizzleClientType } from "../../database/db.connection";
-import { hash, verify } from "argon2";
-import { zUserSchemaType } from "@/modules/user/user.dto";
+import { UserService } from "@/modules/user/user.service";
+import { UserController } from "../../modules/user/user.controller";
+import { Request, Response } from "express";
 
-type InsertBuilder = {
-  values: jest.Mock<InsertBuilder, [any]>;
-  returning: jest.Mock<Promise<zUserSchemaType[]>, [any]>;
+// Mock do UserService
+const mockUserService: Partial<UserService> = {
+  getAll: jest.fn().mockResolvedValue([
+    { name: "Usuário Teste", role: "Admin", email: "teste@teste.com" }
+  ])
 };
 
-type SelectBuilder = {
-  from: jest.Mock<SelectBuilder, [typeof userSchema]>;
-  where: jest.Mock<Promise<zUserSchemaType[]>, [any]>;
-};
-
-describe("UserService ", () => {
-  let dbMock: Partial<DrizzleClientType>;
-  let userService: any;
-
-  const password = "abc";
-
-  let fakeUser: zUserSchemaType = {
-    name: "Jhon Doe",
-    email: "jhon@mail.com",
-    password: password,
-  };
+describe("UserController", () => {
+  let controller: Partial<UserController>;
+  let req: Partial<Request>;
+  let res: Partial<Response>;
 
   beforeEach(() => {
-    let capturedInsert: zUserSchemaType;
-
-    const insertBuilder: InsertBuilder = {
-      values: jest.fn().mockImplementation((obj) => {
-        capturedInsert = obj;
-        return insertBuilder;
-      }),
-      returning: jest.fn().mockImplementation(async () => {
-        return capturedInsert;
-      }),
+    controller = new UserController(mockUserService);
+    req = {
+      user: { id: "", role: "Admin" }
     };
-
-    const selectBuilder: SelectBuilder = {
-      from: jest.fn().mockReturnThis(),
-      where: jest.fn().mockImplementation(async () => {
-        fakeUser.password = await hash(password)
-        return [fakeUser];
-      }),
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
     };
+  });
 
-    dbMock = {
-      insert: jest.fn().mockReturnValue(insertBuilder),
-      select: jest.fn().mockReturnValue(selectBuilder),
-    };
-
-    userService = new UserService(dbMock);
+  it("deve retornar 200 e lista de usuários para Admin", async () => {
+    await controller.getAll(req as Request, res as Response, jest.fn());
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith([
+      { name: "Usuário Teste", role: "Admin", email: "teste@teste.com" }
+    ]);
   });
 });
