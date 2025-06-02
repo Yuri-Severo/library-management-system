@@ -273,7 +273,12 @@ export class UserController {
       }
 
       const newUser = await this.userService.register(validatedData);
-      return res.status(201).json(newUser);
+      if(requestingUserRole === "Admin"){
+        return res.status(200).json(newUser);
+      } else {
+        const {name, email, phone_number, address, fine_amount, registration,cpf} = newUser;
+        return res.status(200).json({name, email, phone_number, address, fine_amount, registration, cpf});
+      }
     } catch (error) {
       console.error("Error in backend: " + error);
       return res.status(500).json(error);
