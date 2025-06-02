@@ -1,20 +1,24 @@
 import { Router, RequestHandler } from "express";
 import {UserController} from "./user.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import { UserService } from "./user.service";
+import { db } from "@/database/db.connection";
 
 const userRouter: Router = Router();
-userRouter.post('/user/login', UserController.login.bind(UserController));
+const userController = new UserController(new UserService(db));
+
+userRouter.post('/user/login', userController.login.bind(userController));
 
 userRouter.use(authMiddleware as RequestHandler); 
 
-userRouter.post("/user/register", UserController.register.bind(UserController));
-userRouter.put("/user/:id", UserController.update.bind(UserController));
-userRouter.put("/user/status/:id", UserController.updateStatus.bind(UserController));
-userRouter.get("/users", UserController.getAll.bind(UserController));
-userRouter.get("/user/id/:id", UserController.getOneById.bind(UserController));
-userRouter.get("/user/cpf/:cpf", UserController.getOneByCpf.bind(UserController));
-userRouter.get("/user/name/:name", UserController.getByName.bind(UserController));
-userRouter.get("/user/registration/:registration", UserController.getOneByRegistration.bind(UserController));
-userRouter.delete("/user/:id", UserController.delete.bind(UserController));
+userRouter.post("/user/register", userController.register.bind(userController));
+userRouter.put("/user/:id", userController.update.bind(userController));
+userRouter.put("/user/status/:id", userController.updateStatus.bind(userController));
+userRouter.get("/users", userController.getAll.bind(userController));
+userRouter.get("/user/id/:id", userController.getOneById.bind(userController));
+userRouter.get("/user/cpf/:cpf", userController.getOneByCpf.bind(userController));
+userRouter.get("/user/name/:name", userController.getByName.bind(userController));
+userRouter.get("/user/registration/:registration", userController.getOneByRegistration.bind(userController));
+userRouter.delete("/user/:id", userController.delete.bind(userController));
 
 export { userRouter };
