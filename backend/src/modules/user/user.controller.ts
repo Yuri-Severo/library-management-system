@@ -9,7 +9,6 @@ import {
 import { UserService } from "./user.service";
 import { db } from "../../database/db.connection";
 import { validate as isUuid } from "uuid";
-import { cp } from "fs";
 import { createAuditLog } from "../audit_log";
 //TODO: PROTECTION AGAINST CONCURRENT EDITS
 //TODO: Maintaining referential integrity
@@ -78,8 +77,6 @@ export class UserController {
         error: "Bad Request",
         message: "This user does not have permission to see this data",
       });
-      
-      res.status(200).json(user);
     }} catch (error) {
       console.error("Error in backend: " + error);
       return res.status(500).json(error);
@@ -159,8 +156,6 @@ export class UserController {
         error: "Bad Request",
         message: "This user does not have permission to see this data",
       });
-      
-      res.status(200).json(user);
     }} catch (error) {
       console.error("Error in backend: " + error);
       return res.status(500).json(error);
