@@ -268,6 +268,16 @@ export class UserController {
     }
   }
 
+  static async login(req: Request, res: Response) {
+    const { cpf, password } = req.body;
+    try {
+      const result = await this.userService.login(cpf, password);
+      return res.status(200).json(result);
+    } catch (error: any) {
+      return res.status(401).json({ message: error.message });
+    }
+  }
+
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const validatedData = zUserUpdateSchema.parse(req.body);
