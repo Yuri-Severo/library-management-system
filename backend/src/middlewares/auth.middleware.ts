@@ -7,16 +7,20 @@ import { eq } from 'drizzle-orm';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    role: string;
-    name: string;
-  };
+// Extend Express Request interface to include 'user'
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      role: string;
+    }
+    interface Request {
+      user: User;
+    }
+  }
 }
 
-export function authMiddleware(requiredRoles?: string[]) {
-  return async (req: AuthRequest, res: Response, next: NextFunction) => {
+export async function authMiddleware(req: Request, res: Response, next: NextFunction){
     try {
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -49,23 +53,15 @@ export function authMiddleware(requiredRoles?: string[]) {
         return res.status(404).json({ message: 'User role not found' });
       }
 
-      // Check required roles if needed
-      if (requiredRoles && !requiredRoles.includes(role.title)) {
-        return res
-          .status(403)
-          .json({ message: 'Forbidden: You do not have permission' });
-      }
-
       // Attach user info to the request
       req.user = {
         id: user.id,
         role: role.title, // Ex: 'admin', 'member'
-        name: user.name,
       };
 
-      next();
+      return next();
     } catch (error) {
       return res.status(401).json({ message: 'Unauthorized', error });
     }
   };
-}
+
