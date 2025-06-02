@@ -324,6 +324,14 @@ export class UserController {
           message: "User was not found",
         });
       }
+      
+      const userLoans = await this.userService.getLoansByUserId(userId);
+      if(userLoans > 0){
+        return res.status(400).json({
+          error: "Bad Request",
+          message: "This user has pending loans, can't change status",
+        });
+      }
       const updatedUser = await this.userService.updateStatus(userId, status);
       res.status(200).json(updatedUser);
     } catch (error) {
