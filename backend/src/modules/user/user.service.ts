@@ -81,7 +81,7 @@ export class UserService {
       birth_date,
     } = user;
     const hashedPassword = await hash(password);
-    const newUser = await this.db
+    const [newUser] = await this.db
       .insert(userSchema)
       .values({
         role_id: role_id,
