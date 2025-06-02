@@ -22,6 +22,7 @@ export class LoanController {
       }
       res.status(200).json(loans);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -44,6 +45,7 @@ export class LoanController {
       }
       res.status(200).json(loan);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -115,6 +117,7 @@ export class LoanController {
       const newLoan = await this.loanService.create(validatedData);
       return res.status(201).json(newLoan);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -139,6 +142,7 @@ export class LoanController {
       const updatedLoan = await this.loanService.update(loanId, validatedData);
       res.status(200).json(updatedLoan);
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
@@ -164,6 +168,7 @@ export class LoanController {
         .status(200)
         .json({ message: "Loan deleted successfully", deletedLoan });
     } catch (error) {
+      console.error("Error in backend: "+ error)
       return res.status(500).json(error);
     }
   }
