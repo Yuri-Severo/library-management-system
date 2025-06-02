@@ -9,6 +9,7 @@ userRouter.post('/user/login', UserController.login.bind(UserController));
 userRouter.use(authMiddleware as RequestHandler); 
 
 userRouter.put("/user/:id", UserController.update.bind(UserController));
+userRouter.put("/user/status/:id", UserController.updateStatus.bind(UserController));
 userRouter.get("/users", UserController.getAll.bind(UserController));
 userRouter.get("/user/:id", UserController.getOneById.bind(UserController));
 userRouter.get("/user/cpf/:cpf", UserController.getOneByCpf.bind(UserController));
