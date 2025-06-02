@@ -294,6 +294,13 @@ export class UserController {
     try {
       const userId = req.params.id;
       const status = req.body.status
+      //const actor_user_id = req.user.id;
+
+      // if(actor_user_id !== "Admin"){ {
+      //  return res.status(400).json({
+      //    error: "Bad Request",
+      //    message: "This user does not have permission to do this action",
+      //  });
       
       const validatedData = zUserPartialUpdateSchema.safeParse({status: status})
       if(!validatedData.success){
