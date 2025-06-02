@@ -2,7 +2,7 @@ import { relations, sql } from "drizzle-orm";
 import { json, pgTable, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { userSchema } from "./user.schema";
 
-export const auditLogsSchema = pgTable("auditLogs", {
+export const auditLogsSchema = pgTable("Audit_Logs", {
   id: uuid().$defaultFn(() => sql`gen_random_uuid()`),
   action: varchar("action", { length: 255 }).notNull(),
   actor_user_id: uuid("actor_user_id")
