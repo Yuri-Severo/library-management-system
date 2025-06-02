@@ -6,11 +6,13 @@ export const zUserSchema = z.object({
     course_id: z.string().nullable().default(null),
     name: z.string(),
     password: z.string(),
-    email: z.string().nullable(),
+    email: z.string().email().nullable(),
     cpf: z.string(),
-    registration: z.string().nullable(),
+    registration: z.string().nullable().default(null),
     phone_number: z.string(),
     address: z.string(),
+    fine_amount: z.number().default(0),
+    birth_date: z.string().date(),
 });
 
 export const zUserUpdateSchema = z.object({

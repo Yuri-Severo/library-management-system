@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, varchar, uuid, timestamp, boolean } from "drizzle-orm/pg-core";
+import { pgTable, varchar, uuid, timestamp, boolean, integer, date,  } from "drizzle-orm/pg-core";
 import { roleSchema } from "./role.schema";
 import { departmentSchema } from "./department.schema";
 import { courseSchema } from "./course.schema";
@@ -25,12 +25,16 @@ export const userSchema = pgTable("User", {
   phone_number: varchar("phone_number", { length: 255 }).notNull(),
   address: varchar("address", { length: 255 }).notNull(),
   isActive: boolean().default(true),
+  fine_amount: integer("fine_amount")
+    .notNull().default(0),
   created_at: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
   updated_at: timestamp("updated_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)
     .notNull(),
+    birth_date: date("birth_date")
+    .notNull()
 });
 
 export const userRelations = relations(userSchema, ({ one, many }) => ({
